@@ -1,0 +1,109 @@
+.backgroundLogin {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100vh;
+}
+
+.gradienteLogin {
+    flex: 1;
+    background: #001136;
+    background: linear-gradient(25deg, rgba(0, 17, 54, 1) 0%, rgb(56, 93, 157) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.janelaLogin {
+    background-color: var(--corJanela);
+    width: 40%;
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    gap: 5px;
+    border-right: solid 1px var(--bordaCor);
+    /* border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px; */
+}
+
+.logoAux {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0px;
+}
+
+.logoAux img {
+    height: 90%;
+}
+
+.janelaLogin h1 {
+    color: var(--azulDestaque);
+    margin-bottom: 10px;
+}
+
+.botaoLogin {
+    margin-top: 10px;
+}
+
+.divApresentação {
+    /* background-color: red; */
+    width: 60%;
+    height: 60%;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: center;
+    color: white;
+}
+
+.divApresentação h1 {
+    font-size: 40px;
+}
+
+.divApresentação a {
+    text-decoration: underline;
+    color: white;
+}
+
+/* .gradienteLogin .logo {
+    width: 100px;
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+} */
+
+.gradienteLogin .logosCanto {
+    /* background-color: red; */
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    /* width: 300px; */
+    height: 60px;
+    gap: 10px;
+    display: flex;
+}
+
+.gradienteLogin .logosCanto img {
+    height: 90%;
+}
+
+@media (max-width: 700px) {
+    .gradienteLogin {
+        display: none;
+    }
+
+    .janelaLogin {
+        width: 100%;
+        border: none;
+    }
+}
