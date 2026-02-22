@@ -2,6 +2,7 @@ import './styles/login.css'
 import LogoCompletaAzul from '../assets/SIMS_logo_branca.png'
 import ViicLogo from '../assets/viic_logo_branca.png'
 import SIMSOlho from '../assets/SIMS_olho.png'
+import SIMSazul from '../assets/SIMS_logo_azul.png'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -25,7 +26,8 @@ export default function Login() {
             <main className="backgroundLogin">
                 <div className="janelaLogin">
                     <div className='logoAux'>
-                        <img src={SIMSOlho} alt="" />
+                        <img src={SIMSazul} alt="" className='logoCompleta' />
+                        <img src={SIMSOlho} alt="" className='logoOlho' />
                     </div>
                     <h1>Login</h1>
                     <p>Usuário</p>

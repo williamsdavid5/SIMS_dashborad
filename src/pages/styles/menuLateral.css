@@ -1,0 +1,79 @@
+.menuLateralDiv {
+    background-color: var(--corJanela);
+    width: 20%;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    border-right: solid 1px var(--bordaCor);
+}
+
+.menuLateralDiv .logoAux {
+    height: 30px;
+    justify-content: left;
+    margin: 5px;
+    margin-bottom: 30px;
+}
+
+.menuLateralDiv .titulo {
+    color: var(--azulDestaque);
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.menuLateral {
+    /* background-color: var(--backgroundjanela); */
+    margin-top: 10px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    /* padding: 10px; */
+    box-sizing: border-box;
+    gap: 10px;
+    border-radius: 10px;
+    /* border: solid 1px var(--bordaCor); */
+}
+
+.menuLateral .itemDesativado,
+.menuLateral .itemAtivado {
+    text-decoration: none;
+    justify-content: left;
+    display: flex;
+    background-color: var(--corJanela);
+    color: var(--azulDestaque);
+    /* border: solid 1px var(--bordaCor); */
+    border: none;
+    color: var(--textoCor);
+    padding: 15px 10px;
+    /* font-weight: bold; */
+    border-radius: 10px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.menuLateral .itemDesativado:hover {
+    background-color: var(--backgroundjanela);
+}
+
+.menuLateral .itemAtivado {
+    background-color: var(--azulDestaque);
+    color: var(--corJanela);
+}
+
+.paragrafoPadrao {
+    color: var(--textoCor);
+    margin-bottom: 10px;
+    font-size: 11pt;
+    /* text-align: justify; */
+}
+
+@media (max-width: 1000px) {
+    .menuLateralDiv {
+        width: 30%;
+    }
+}
+
+@media (max-width: 700px) {
+    .menuLateralDiv {
+        width: 50%;
+    }
+}

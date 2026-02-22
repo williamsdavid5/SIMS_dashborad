@@ -46,6 +46,10 @@
     height: 90%;
 }
 
+.logoAux .logoCompleta {
+    display: none;
+}
+
 .janelaLogin h1 {
     color: var(--azulDestaque);
     margin-bottom: 10px;
@@ -105,5 +109,18 @@
     .janelaLogin {
         width: 100%;
         border: none;
+    }
+
+    .logoAux .logoCompleta {
+        display: block;
+    }
+
+    .logoAux .logoOlho {
+        display: none;
+    }
+
+    .logoAux {
+        height: 70px;
+
     }
 }
