@@ -70,13 +70,13 @@
     /* text-align: justify; */
 }
 
-@media (max-width: 1000px) {
+/* @media (max-width: 1000px) {
     .menuLateralDiv {
         width: 30%;
     }
-}
+} */
 
-@media (max-width: 700px) {
+@media (max-width: 1000px) {
     .menuLateralDiv {
         display: none;
     }
@@ -88,18 +88,18 @@
         margin-top: 10px;
         margin-left: 10px;
         width: 60px;
-        background-color: var(--backgroundjanela);
-        color: var(--azulDestaque);
-        font-weight: bold;
         border: solid 2px var(--azulDestaque);
+        color: var(--corJanela);
+        background-color: var(--azulDestaque);
         /* top: 10px;
         left: 10px; */
     }
 
     .botaoMenu:hover {
+        background-color: var(--backgroundjanela);
+        color: var(--azulDestaque);
+        font-weight: bold;
         border: solid 2px var(--azulDestaque);
-        color: var(--corJanela);
-        background-color: var(--azulDestaque);
     }
 
     .menuMobile {
