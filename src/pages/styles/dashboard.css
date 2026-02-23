@@ -112,6 +112,24 @@
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         grid-auto-rows: 100px;
     }
+
+    .ocorrenciasPorTipo {
+        grid-column: span 5;
+        grid-row: span 3;
+    }
+
+    .analiseEstatistica {
+        grid-column: span 3;
+    }
+
+    .falsosPositivos {
+        grid-column: span 2;
+    }
+
+    .ultimasOcorrencias {
+        grid-column: span 5;
+        grid-row: span 2;
+    }
 }
 
 @media (max-width: 1000px) {
@@ -126,49 +144,52 @@
     } */
 
     .inforOcorrenciasHora {
-        grid-column: span 3;
+        grid-column: span 4;
         grid-row: span 2;
-    }
-
-    .distribuicaoPorCamera {
-        grid-column: span 3;
-        grid-row: span 3;
-    }
-
-    .analiseEstatistica {
-        grid-column: span 3;
     }
 
     .falsosPositivos {
-        grid-column: span 3;
+        grid-column: span 4;
     }
 
-    .ocorrenciasPorTipo {
-        grid-column: span 3;
+    .distribuicaoPorCamera {
+        grid-column: span 4;
         grid-row: span 3;
-    }
-
-    .ultimasOcorrencias {
-        grid-column: span 3;
-        grid-row: span 2;
     }
 
     .historicoCompleto {
-        grid-column: span 3;
+        grid-column: span 4;
         grid-row: span 3;
+    }
+
+    .ocorrenciasPorTipo {
+        grid-column: span 4;
     }
 
     .cameraCritica {
         grid-column: span 2;
     }
 
+    .analiseEstatistica {
+        grid-column: span 4;
+    }
+
     .blocosDash {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         grid-auto-rows: 100px;
     }
+
+    .historicoCompleto {
+        grid-column: span 4;
+    }
+
+    .ultimasOcorrencias {
+        grid-column: span 4;
+    }
+
 }
 
-@media (max-width: 600px) {
+@media (max-width: 720px) {
     .blocosDash {
         grid-template-columns: 1fr;
         grid-auto-rows: 100px;
