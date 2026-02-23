@@ -5,7 +5,7 @@
     margin: 0;
     box-sizing: border-box;
     width: 100%;
-    height: 100vh;
+    height: 100dvh;
 }
 
 .gradienteLogin {
@@ -20,7 +20,7 @@
 .janelaLogin {
     background-color: var(--corJanela);
     width: 40%;
-    height: 100vh;
+    height: 100dvh;
     box-sizing: border-box;
     padding: 10px;
     display: flex;
