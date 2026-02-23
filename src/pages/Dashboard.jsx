@@ -7,7 +7,10 @@ export default function Dashboard() {
             <main className="dashboardMain">
                 <MenuLateral></MenuLateral>
                 <section className='principalDash'>
-                    sdfsffs
+                    <div className='superiorDash'>
+                        <h2>Dashboard</h2>
+                        <p>Feedback visual sobre o monitoramento, observe dados relevantes.</p>
+                    </div>
                 </section>
             </main>
         </>
