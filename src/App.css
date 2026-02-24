@@ -50,6 +50,30 @@ button:hover {
   border: solid 1px var(--azulMaisEscuro);
 }
 
+table {
+  /* border: solid 1px var(--bordaCor); */
+  border-collapse: collapse;
+}
+
+tr,
+tbody,
+thead,
+td,
+th {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+td,
+th {
+  border: solid 1px var(--bordaCor);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  /* border-right: solid 1px var(--bordaCor); */
+}
+
 :root {
   --corJanela: #F4F4FF;
   --backgroundjanela: #D4DBED;

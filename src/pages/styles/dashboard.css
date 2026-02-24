@@ -88,6 +88,13 @@
     grid-row: span 2;
 }
 
+.inforEstatistica {
+    /* background-color: gray; */
+    width: 100%;
+    height: 100%;
+    color: var(--textoCor);
+}
+
 .falsosPositivos {
     grid-row: span 2;
 }
@@ -100,6 +107,16 @@
 .ultimasOcorrencias {
     grid-column: span 3;
     grid-row: span 2;
+    overflow-y: auto;
+}
+
+.tabelaUltimasOcorrencias {
+    width: 90%;
+    border: none;
+}
+
+.tabelaUltimasOcorrencias th {
+    padding: 2px;
 }
 
 .historicoCompleto {
@@ -212,6 +229,10 @@
     .historicoCompleto,
     .cameraCritica {
         grid-column: span 1;
+    }
+
+    table {
+        font-size: 13px;
     }
 }
 
