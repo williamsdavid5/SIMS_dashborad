@@ -135,6 +135,237 @@ export default function Dashboard() {
         }
     ];
 
+    const historicoCompleto = [
+        // Exemplos originais
+        {
+            id: 101,
+            data: "2025-02-24T10:33:00",
+            camera: "CAM03",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.92,
+            status: 'Não confirmado'
+        },
+        {
+            id: 102,
+            data: "2025-02-24T10:33:00",
+            camera: "CAM01",
+            item: "Luva",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.87,
+            status: 'Em análise'
+        },
+        {
+            id: 103,
+            data: "2025-02-24T10:33:00",
+            camera: "CAM01",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.97,
+            status: 'Em análise'
+        },
+        {
+            id: 102,
+            data: "2025-02-24T10:33:00",
+            camera: "CAM01",
+            item: "Luva",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.87,
+            status: 'Confirmado'
+        },
+
+        // Novas variações
+        {
+            id: 104,
+            data: "2025-02-24T11:15:00",
+            camera: "CAM02",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.78,
+            status: 'Não confirmado'
+        },
+        {
+            id: 105,
+            data: "2025-02-24T11:15:00",
+            camera: "CAM02",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.82,
+            status: 'Não confirmado'
+        },
+        {
+            id: 106,
+            data: "2025-02-24T11:42:00",
+            camera: "CAM04",
+            item: "Luva",
+            imagemUrl: "/imagens/oc3.jpg",
+            confianca: 0.95,
+            status: 'Confirmado'
+        },
+        {
+            id: 107,
+            data: "2025-02-24T12:08:00",
+            camera: "CAM01",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.63,
+            status: 'Em análise'
+        },
+        {
+            id: 108,
+            data: "2025-02-24T12:30:00",
+            camera: "CAM03",
+            item: "Luva",
+            imagemUrl: "/imagens/oc3.jpg",
+            confianca: 0.91,
+            status: 'Confirmado'
+        },
+        {
+            id: 109,
+            data: "2025-02-24T13:17:00",
+            camera: "CAM02",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.72,
+            status: 'Em análise'
+        },
+        {
+            id: 110,
+            data: "2025-02-24T13:45:00",
+            camera: "CAM04",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc3.jpg",
+            confianca: 0.89,
+            status: 'Não confirmado'
+        },
+        {
+            id: 111,
+            data: "2025-02-24T14:22:00",
+            camera: "CAM01",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.94,
+            status: 'Confirmado'
+        },
+        {
+            id: 112,
+            data: "2025-02-24T14:50:00",
+            camera: "CAM03",
+            item: "Luva",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.77,
+            status: 'Em análise'
+        },
+        {
+            id: 113,
+            data: "2025-02-24T15:10:00",
+            camera: "CAM02",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc3.jpg",
+            confianca: 0.96,
+            status: 'Confirmado'
+        },
+        {
+            id: 114,
+            data: "2025-02-24T15:33:00",
+            camera: "CAM04",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.69,
+            status: 'Não confirmado'
+        },
+        {
+            id: 115,
+            data: "2025-02-24T16:01:00",
+            camera: "CAM01",
+            item: "Luva",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.88,
+            status: 'Em análise'
+        },
+        {
+            id: 116,
+            data: "2025-02-24T16:30:00",
+            camera: "CAM03",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc3.jpg",
+            confianca: 0.93,
+            status: 'Confirmado'
+        },
+        {
+            id: 117,
+            data: "2025-02-24T16:55:00",
+            camera: "CAM02",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.84,
+            status: 'Não confirmado'
+        },
+        {
+            id: 118,
+            data: "2025-02-24T17:20:00",
+            camera: "CAM04",
+            item: "Luva",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.79,
+            status: 'Em análise'
+        },
+        {
+            id: 101,
+            data: "2025-02-24T17:45:00",
+            camera: "CAM01",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.81,
+            status: 'Confirmado'
+        },
+        {
+            id: 119,
+            data: "2025-02-25T08:30:00",
+            camera: "CAM03",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc3.jpg",
+            confianca: 0.90,
+            status: 'Não confirmado'
+        },
+        {
+            id: 120,
+            data: "2025-02-25T09:15:00",
+            camera: "CAM02",
+            item: "Luva",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.73,
+            status: 'Em análise'
+        },
+        {
+            id: 121,
+            data: "2025-02-25T09:45:00",
+            camera: "CAM04",
+            item: "Óculos",
+            imagemUrl: "/imagens/oc3.jpg",
+            confianca: 0.98,
+            status: 'Confirmado'
+        },
+        {
+            id: 122,
+            data: "2025-02-25T10:10:00",
+            camera: "CAM01",
+            item: "Capacete",
+            imagemUrl: "/imagens/oc1.jpg",
+            confianca: 0.85,
+            status: 'Em análise'
+        },
+        {
+            id: 123,
+            data: "2025-02-25T10:40:00",
+            camera: "CAM03",
+            item: "Luva",
+            imagemUrl: "/imagens/oc2.jpg",
+            confianca: 0.91,
+            status: 'Não confirmado'
+        }
+    ];
+
     const formatarData = (dataISO) => {
         const data = new Date(dataISO);
         return data.toLocaleString("pt-BR");
@@ -219,7 +450,7 @@ export default function Dashboard() {
                                 <b>Média diária:</b> 17 Ocorrências <br />
                                 <b>Total para esta semana: </b> 29 Ocorrências <br />
                                 <b>Média semanal:</b> 23 Ocorrências <br />
-                                <b>Média de tempo tem EPI:</b> 2m 23s <br />
+                                <b>Média de tempo sem EPI:</b> 2m 23s <br />
                                 <b>EPI mais crítico:</b> Óculos <br />
                                 <b>Câmera com maior incidência:</b> CAM03 <br />
                             </p>
@@ -273,6 +504,40 @@ export default function Dashboard() {
                         </div>
                         <div className='bloco historicoCompleto'>
                             <p className='tituloBloco'>Histórico completo</p>
+                            <table border={1} className='tabelaUltimasOcorrencias'>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Câmera</th>
+                                        <th>Item envolvido</th>
+                                        <th>Imagem</th>
+                                        <th>Confiança</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {historicoCompleto.map((ocorrencia) => (
+
+                                        <tr key={ocorrencia.id}>
+                                            <td>{formatarData(ocorrencia.data)}</td>
+                                            <td>{ocorrencia.camera}</td>
+                                            <td>{ocorrencia.item}</td>
+                                            <td>
+                                                <a href={ocorrencia.imagemUrl} target="_blank" rel="noopener noreferrer">
+                                                    Ver
+                                                </a>
+                                            </td>
+                                            <td>{ocorrencia.confianca}</td>
+                                            <td>
+                                                <p className={ocorrencia.status == 'Em análise' ? 'analise' : ocorrencia.status == 'Não confirmado' ? 'naoConfirmado' : ocorrencia.status == 'Confirmado' ? 'confirmado' : ''}>
+                                                    {ocorrencia.status}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </section>
                 </section>

@@ -1,3 +1,17 @@
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../public/fonts/OpenSans-VariableFont_wdth\,wght.ttf');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../public/fonts/Roboto-VariableFont_wdth\,wght.ttf');
+}
+
+
 body,
 html,
 form,
@@ -9,7 +23,7 @@ form,
 }
 
 body {
-  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-family: 'Roboto', 'OpenSans', Arial, Helvetica, sans-serif;
   /* font-weight: bold; */
 }
 
