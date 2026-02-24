@@ -166,6 +166,10 @@
         grid-column: span 4;
     }
 
+    .ocorrenciasPorTipo .auxiliarGrafico {
+        width: 70%;
+    }
+
     .cameraCritica {
         grid-column: span 2;
     }
@@ -193,6 +197,10 @@
     .blocosDash {
         grid-template-columns: 1fr;
         grid-auto-rows: 100px;
+    }
+
+    .ocorrenciasPorTipo .auxiliarGrafico {
+        width: 100%;
     }
 
     .inforOcorrenciasHora,

@@ -3,6 +3,7 @@ import LogoCompletaAzul from '../assets/SIMS_logo_branca.png'
 import ViicLogo from '../assets/viic_logo_branca.png'
 import SIMSOlho from '../assets/SIMS_olho.png'
 import SIMSazul from '../assets/SIMS_logo_azul.png'
+import EPIback from '../assets/background_epi_image.jpg'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -52,6 +53,7 @@ export default function Login() {
                         <img src={LogoCompletaAzul} alt="" className='logo' />
                         <img src={ViicLogo} alt="" />
                     </div>
+                    {/* <img src={EPIback} alt="" className='backgroundEpi' /> */}
                 </div>
             </main>
         </>

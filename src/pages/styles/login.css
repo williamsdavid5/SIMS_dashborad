@@ -10,11 +10,17 @@
 
 .gradienteLogin {
     flex: 1;
-    background: #001136;
-    background: linear-gradient(25deg, rgba(0, 17, 54, 1) 0%, rgb(56, 93, 157) 100%);
+    /* background: #001136;
+    background: linear-gradient(25deg, rgba(0, 17, 54, 1) 0%, rgb(56, 93, 157) 100%); */
+    background-image: url('../../assets/background_epi_image.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: auto 100%;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+
 }
 
 .janelaLogin {
