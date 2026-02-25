@@ -28,26 +28,26 @@ export default function MenuLateral() {
                         Dashboard
                     </NavLink>
                     <NavLink
-                        to="/"
+                        to="/home"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
 
                     >
                         Função 1
                     </NavLink>
                     <NavLink
-                        to="/"
+                        to="/home"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
                         Função 2
                     </NavLink>
                     <NavLink
-                        to="/"
+                        to="/home"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
                         Função 3
                     </NavLink>
                     <NavLink
-                        to="/"
+                        to="/home"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
                         Função 4

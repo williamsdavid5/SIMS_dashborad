@@ -1,5 +1,6 @@
 import './styles/dashboard.css'
 import MenuLateral from './MenuLateral'
+import ModalImg from './ModalImg';
 import { useState } from 'react'
 
 import {
@@ -373,6 +374,8 @@ export default function Dashboard() {
 
     const COLORS = ["#0A1E43", "#243757", "#4b6185", "#879dc0"];
 
+    const [modalImagem, setModalImagem] = useState(false);
+    const [dadosOcorrencia, setDadosOcorrencia] = useState([]);
 
     return (
         <>
@@ -493,9 +496,20 @@ export default function Dashboard() {
                                             <td>{ocorrencia.camera}</td>
                                             <td>{ocorrencia.item}</td>
                                             <td>
-                                                <a href={ocorrencia.imagemUrl} target="_blank" rel="noopener noreferrer">
+                                                {/* <a href={ocorrencia.imagemUrl} target="_blank" rel="noopener noreferrer">
                                                     Ver
-                                                </a>
+                                                </a> */}
+                                                <button
+                                                    className='botaoVerImagem'
+                                                    onClick={() => {
+                                                        setModalImagem(true)
+                                                        setDadosOcorrencia({
+                                                            data: ocorrencia.data,
+                                                            camera: ocorrencia.camera,
+                                                            item: ocorrencia.item
+                                                        })
+                                                    }}
+                                                >Ver</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -524,9 +538,20 @@ export default function Dashboard() {
                                             <td>{ocorrencia.camera}</td>
                                             <td>{ocorrencia.item}</td>
                                             <td>
-                                                <a href={ocorrencia.imagemUrl} target="_blank" rel="noopener noreferrer">
+                                                {/* <a href={ocorrencia.imagemUrl} target="_blank" rel="noopener noreferrer">
                                                     Ver
-                                                </a>
+                                                </a> */}
+                                                <button
+                                                    className='botaoVerImagem'
+                                                    onClick={() => {
+                                                        setModalImagem(true)
+                                                        setDadosOcorrencia({
+                                                            data: ocorrencia.data,
+                                                            camera: ocorrencia.camera,
+                                                            item: ocorrencia.item
+                                                        })
+                                                    }}
+                                                >Ver</button>
                                             </td>
                                             <td>{ocorrencia.confianca}</td>
                                             <td>
@@ -541,6 +566,9 @@ export default function Dashboard() {
                         </div>
                     </section>
                 </section>
+                {modalImagem && (
+                    <ModalImg setModalImagem={setModalImagem} dadosOcorrencia={dadosOcorrencia}></ModalImg>
+                )}
             </main>
         </>
     )

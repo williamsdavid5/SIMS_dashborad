@@ -1,0 +1,71 @@
+.modalBackground {
+    position: fixed;
+    width: 100%;
+    height: 100dvh;
+    background-color: rgba(10, 30, 63, 0.7);
+    backdrop-filter: blur(3px);
+    z-index: 10000;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.janelaModal {
+    width: 70%;
+    /* height: 90%; */
+    background-color: var(--corJanela);
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.topoModal {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.botaoFecharModal {
+    /* width: 30px; */
+    /* height: 30px; */
+    padding: 8px;
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    font-weight: bold;
+}
+
+.auxImagem {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: gray; */
+}
+
+.auxImagem img {
+    width: 100%;
+
+}
+
+@media (max-width: 1000px) {
+    .janelaModal {
+        width: 90%;
+    }
+}
+
+@media (max-width: 720px) {
+    .topoModal {
+        flex-direction: column-reverse;
+        align-items: first baseline;
+        gap: 3px;
+        /* background-color: gray; */
+    }
+}
