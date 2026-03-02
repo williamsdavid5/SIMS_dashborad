@@ -1,0 +1,40 @@
+.mainGestaoEPI {
+    background-color: var(--backgroundjanela);
+    flex: 1;
+    /* padding: 20px; */
+}
+
+.menuSuperiorGestaoEPI {
+    background-color: var(--corJanela);
+    width: 100%;
+    display: flex;
+    border-bottom: solid 1px var(--bordaCor);
+}
+
+.menuSuperiorGestaoEPI a {
+    text-decoration: none;
+    width: 200px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* color: white; */
+    color: var(--azulDestaque);
+    font-weight: bold;
+    transition: background-color ease-in-out 0.2s;
+}
+
+.menuSuperiorGestaoEPI a:hover {
+    background-color: var(--bordaCor);
+}
+
+.menuSuperiorGestaoEPI .ativado {
+    background-color: var(--azulDestaque);
+    color: white;
+}
+
+@media (max-width: 500px) {
+    .menuSuperiorGestaoEPI a {
+        font-size: 12px;
+    }
+}
