@@ -50,6 +50,33 @@
     border-top-right-radius: 10px;
     box-sizing: border-box;
     border-top: solid 1px rgb(229, 229, 229);
+    /* display: flex; */
+}
+
+.divisaoInterna {
+    /* background-color: aqua; */
+    display: flex;
+}
+
+.blocoEpi .auxiliarTexto .esquerda {
+    width: 55%;
+    height: 100%;
+    /* padding: 10px; */
+}
+
+.blocoEpi .auxiliarTexto .direita {
+    width: 45%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: aqua; */
+}
+
+.blocoEpi .auxiliarTexto h3 {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .blocoEpi img {
@@ -59,18 +86,18 @@
     object-fit: contain;
 }
 
-.indisponivelImg {
+/* .indisponivelImg {
     filter: grayscale(100%);
-    /* filter: brightness(50%); */
-}
+} */
 
 .cardDisponibilidade {
-    width: 100%;
+    /* width: 100%; */
+    /* flex: 1; */
     text-align: center;
-    margin-top: 8px;
+    /* margin-top: 8px; */
     color: white;
     border-radius: 10px;
-    padding: 2px;
+    padding: 10px;
 }
 
 .cardDisponibilidade.disponivel {

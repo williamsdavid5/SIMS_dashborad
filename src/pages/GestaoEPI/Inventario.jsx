@@ -67,13 +67,19 @@ export default function Inventario() {
                                 </div>
                                 <div className='auxiliarTexto'>
                                     <h3>{epi.nome}</h3>
-                                    <p>Total: {epi.total}</p>
-                                    <p>Disponíveis: {epi.disponiveis}</p>
-                                    <p className={`cardDisponibilidade ${disponivel ? 'disponivel' : 'indisponivel'}`}>
-                                        {disponivel ?
-                                            <span>Disponível</span> : <span>Indisponível</span>
-                                        }
-                                    </p>
+                                    <div className='divisaoInterna'>
+                                        <div className='esquerda'>
+                                            <p>Total: {epi.total}</p>
+                                            <p>Disponíveis: {epi.disponiveis}</p>
+                                        </div>
+                                        <div className='direita'>
+                                            <p className={`cardDisponibilidade ${disponivel ? 'disponivel' : 'indisponivel'}`}>
+                                                {disponivel ?
+                                                    <span>Disponível</span> : <span>Indisponível</span>
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </>
