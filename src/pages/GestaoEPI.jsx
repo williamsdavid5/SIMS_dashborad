@@ -8,14 +8,14 @@ export default function GestaoEPI() {
             <main className="dashboardMain">
                 <MenuLateral></MenuLateral>
                 <section className="mainGestaoEPI">
-                    <header className="superiorDash">
+                    <header className="superiorDash superiorGestaoEPI">
                         <h1>Gestão de EPIs</h1>
                         <p>Controle a distribuição de EPIs entre os funcionários autorizados.</p>
                     </header>
                     <nav className="menuSuperiorGestaoEPI">
                         <NavLink
                             to="." end
-                            className={({ isActive }) => isActive ? "ativado" : ""}
+                            className={({ isActive }) => isActive ? "ativado primeiro" : "primeiro"}
                         >Inventário</NavLink>
                         <NavLink
                             to="distribuicao"

@@ -10,9 +10,9 @@ import Botas from '../../assets/epis/botas.jpeg'
 const epi_lista = [
     {
         nome: 'Capacete',
-        total: '17',
-        disponiveis: '2',
-        imagem: Capacete  // Sem chaves, pois já é a variável importada
+        total: '28',
+        disponiveis: '0',
+        imagem: Capacete,
     },
     {
         nome: 'Óculos de Proteção',
@@ -29,13 +29,13 @@ const epi_lista = [
     {
         nome: 'Protetor Auricular',
         total: '41',
-        disponiveis: '12',
+        disponiveis: '0',
         imagem: Protetor_auricular
     },
     {
         nome: 'Luvas de Raspa',
         total: '53',
-        disponiveis: '15',
+        disponiveis: '0',
         imagem: Luvas
     },
     {
@@ -57,59 +57,28 @@ export default function Inventario() {
         <>
             <section className="episBlocos">
                 {epi_lista.map((epi) => {
+                    const disponivel = parseInt(epi.disponiveis, 10) > 0;
+
                     return (
                         <>
                             <div className="blocoEpi">
-                                <h3>{epi.nome}</h3>
-                                <img src={epi.imagem} alt="" />
-                                <p>Total: {epi.total}</p>
-                                <p>Disponíveis: {epi.disponiveis}</p>
+                                <div className={`auxiliarImagem`}>
+                                    <img src={epi.imagem} alt="" className={`${disponivel ? '' : 'indisponivelImg'}`} />
+                                </div>
+                                <div className='auxiliarTexto'>
+                                    <h3>{epi.nome}</h3>
+                                    <p>Total: {epi.total}</p>
+                                    <p>Disponíveis: {epi.disponiveis}</p>
+                                    <p className={`cardDisponibilidade ${disponivel ? 'disponivel' : 'indisponivel'}`}>
+                                        {disponivel ?
+                                            <span>Disponível</span> : <span>Indisponível</span>
+                                        }
+                                    </p>
+                                </div>
                             </div>
                         </>
                     )
                 })}
-                {/* <div className="blocoEpi">
-                    <img src={Capacete} alt="" />
-                    <h3>Capacete</h3>
-                    <p>Total: 17</p>
-                    <p>Disponíveis: 8</p>
-                </div>
-                <div className="blocoEpi">
-                    <img src={Oculos} alt="" />
-                    <h3>Óculos</h3>
-                    <p>Total: 17</p>
-                    <p>Disponíveis: 8</p>
-                </div>
-                <div className="blocoEpi">
-                    <img src={Colete} alt="" />
-                    <h3>Colete</h3>
-                    <p>Total: 17</p>
-                    <p>Disponíveis: 8</p>
-                </div>
-                <div className="blocoEpi">
-                    <img src={Luvas} alt="" />
-                    <h3>Luvas</h3>
-                    <p>Total: 17</p>
-                    <p>Disponíveis: 8</p>
-                </div>
-                <div className="blocoEpi">
-                    <img src={Protetor_auricular} alt="" />
-                    <h3>Protetor auricular</h3>
-                    <p>Total: 17</p>
-                    <p>Disponíveis: 8</p>
-                </div>
-                <div className="blocoEpi">
-                    <img src={Mascara} alt="" />
-                    <h3>Máscara</h3>
-                    <p>Total: 17</p>
-                    <p>Disponíveis: 8</p>
-                </div>
-                <div className="blocoEpi">
-                    <img src={Botas} alt="" />
-                    <h3>Botas</h3>
-                    <p>Total: 17</p>
-                    <p>Disponíveis: 8</p>
-                </div> */}
             </section>
         </>
     )

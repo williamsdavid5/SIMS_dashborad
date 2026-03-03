@@ -8,6 +8,10 @@
     /* padding: 20px; */
 }
 
+.superiorGestaoEPI {
+    border: none;
+}
+
 .menuSuperiorGestaoEPI {
     background-color: var(--corJanela);
     width: 100%;
@@ -16,6 +20,8 @@
 }
 
 .menuSuperiorGestaoEPI a {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     text-decoration: none;
     width: 200px;
     height: 40px;
@@ -26,6 +32,10 @@
     color: var(--azulDestaque);
     font-weight: bold;
     transition: background-color ease-in-out 0.2s;
+}
+
+.menuSuperiorGestaoEPI .primeiro {
+    border-top-left-radius: 0px;
 }
 
 .menuSuperiorGestaoEPI a:hover {
