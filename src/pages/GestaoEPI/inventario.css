@@ -108,15 +108,92 @@
     background-color: red;
 }
 
+.tituloEPI {
+    color: var(--azulDestaque);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* margin: 5px 0px; */
+}
+
+.modalEmprestimo {
+    width: 700px;
+}
+
+.auxiliarModal {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.auxiliarModal .cardDisponibilidade {
+    width: 110px;
+    font-size: 15px;
+    /* margin-bottom: 10px; */
+}
+
+.spanHorizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.spanHorizontal select {
+    flex: 1;
+}
+
+.auxBotaoHorizontal {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.auxBotaoHorizontal button {
+    width: 50%;
+    height: 40px;
+}
+
 @media (max-width: 1000px) {
     .episBlocos {
         height: auto;
         flex: none;
+    }
+
+    .modalEmprestimo {
+        width: 80%;
+    }
+}
+
+@media (max-width: 700px) {
+    .spanHorizontal {
+        flex-direction: column;
+        align-items: first baseline;
+        margin: 0;
+    }
+
+    .spanHorizontal select {
+        width: 100%;
+    }
+
+    .auxBotaoHorizontal button {
+        width: 80%;
     }
 }
 
 @media (max-width: 500px) {
     .blocoEpi {
         width: 90%;
+    }
+
+    .modalEmprestimo h2,
+    .modalEmprestimo h1,
+    .modalEmprestimo h3 {
+        font-size: 23px;
     }
 }

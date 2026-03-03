@@ -54,7 +54,8 @@ hr {
   width: 100%;
 }
 
-input {
+input,
+select {
   padding: 5px;
   border-radius: 10px;
   border: solid 1px var(--bordaCor);
