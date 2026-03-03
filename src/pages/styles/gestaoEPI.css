@@ -1,6 +1,10 @@
 .mainGestaoEPI {
     background-color: var(--backgroundjanela);
-    flex: 1;
+    height: 100dvh;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
     /* padding: 20px; */
 }
 
@@ -31,6 +35,12 @@
 .menuSuperiorGestaoEPI .ativado {
     background-color: var(--azulDestaque);
     color: white;
+}
+
+@media (max-width: 1000px) {
+    .mainGestaoEPI {
+        width: 100%;
+    }
 }
 
 @media (max-width: 500px) {

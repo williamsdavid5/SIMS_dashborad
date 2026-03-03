@@ -1,0 +1,42 @@
+.episBlocos {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 230px);
+    grid-auto-rows: 330px;
+    gap: 20px;
+    justify-content: center;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.blocoEpi {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform ease-in-out 0.1s;
+    /* width: 200px;
+    height: 200px; */
+}
+
+.blocoEpi:hover {
+    transform: scale(1.03);
+}
+
+.blocoEpi img {
+    height: 70%;
+    /* width: 40px; */
+    /* margin-bottom: 10px; */
+}
+
+@media (max-width: 1000px) {
+    .episBlocos {
+        height: auto;
+        flex: none;
+    }
+}
