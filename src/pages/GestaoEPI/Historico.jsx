@@ -8,7 +8,7 @@ export default function Historico() {
         {
             funcionario: 'Arthur da Silva',
             equipamento: 'Capacete',
-            tipo: 'Retirada',
+            tipo: 'Devolução',
             timestamp: '2026-02-24T07:30:00'
         },
         {
@@ -20,7 +20,7 @@ export default function Historico() {
         {
             funcionario: 'João Santos',
             equipamento: 'Botas de Segurança',
-            tipo: 'Retirada',
+            tipo: 'Devolução',
             timestamp: '2026-02-24T07:35:00'
         },
         {
@@ -361,6 +361,7 @@ export default function Historico() {
                         value={dataFiltroFim}
                         onChange={(e) => handleChange(e, setDataFiltroFim)}
                     />
+                    <button>Aplicar</button>
                 </span>
                 <section className='janelaListaHistorico'>
                     <table border={1} className='tabelaUltimasOcorrencias tableHistorico'>
@@ -374,14 +375,20 @@ export default function Historico() {
                         </thead>
                         <tbody>
                             {
-                                dadosHistorico.map((dado, i) => (
-                                    <tr key={i}>
-                                        <td>{dado.funcionario}</td>
-                                        <td><b>{dado.equipamento}</b></td>
-                                        <td>{dado.tipo}</td>
-                                        <td>{formatarData(dado.timestamp)}</td>
-                                    </tr>
-                                ))
+                                dadosHistorico.map((dado, i) => {
+                                    return (
+                                        <tr key={i}>
+                                            <td>{dado.funcionario}</td>
+                                            <td><b>{dado.equipamento}</b></td>
+                                            <td>
+                                                <p
+                                                    className={`tipoDadoLista ${dado.tipo == 'Devolução' ? 'devolucao' : 'retirada'}`}
+                                                >{dado.tipo}</p>
+                                            </td>
+                                            <td>{formatarData(dado.timestamp)}</td>
+                                        </tr>
+                                    )
+                                })
                             }
                         </tbody>
                     </table>
