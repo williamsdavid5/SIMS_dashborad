@@ -29,6 +29,9 @@
 .auxiliarAreaBloco .esquerda {
     width: 50%;
     color: var(--textoCor);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .auxiliarAreaBloco .direita {

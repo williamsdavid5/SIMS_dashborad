@@ -1,0 +1,61 @@
+.mainEstoque {
+    /* background-color: aqua; */
+    flex: 1;
+    min-height: auto;
+    min-width: auto;
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.tabelaEstoque {
+    width: 100%;
+}
+
+.tabelaEstoque td {
+    /* padding: 5px; */
+}
+
+.estadoEPI {
+    /* background-color: aqua; */
+    margin: 3px;
+    border-radius: 4px;
+}
+
+.estadoEPI.normal {
+    background-color: green;
+    color: white;
+}
+
+.estadoEPI.alerta {
+    background-color: gold;
+}
+
+.estadoEPI.danificado {
+    background-color: red;
+    color: white;
+}
+
+@media (max-width: 1000px) {
+    .mainEstoque {
+        overflow-y: visible;
+    }
+
+    .tabelaEstoque {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 700px) {
+    .janelaEstoque {
+        overflow-x: auto;
+        flex: none;
+        width: 100%;
+    }
+
+    .tabelaEstoque {
+        width: 900px;
+    }
+}

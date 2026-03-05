@@ -9,7 +9,7 @@ function BlocoDistribuicao({ area }) {
 
     const graficoData = [
         {
-            name: 'Total',
+            name: 'epis na área',
             value: parseInt(area.porcentagem)
         }
     ]
@@ -30,7 +30,7 @@ function BlocoDistribuicao({ area }) {
                     <div className='direita'>
                         <ResponsiveContainer width="100%" height="100%">
                             <RadialBarChart
-                                innerRadius="70%"
+                                innerRadius="60%"
                                 outerRadius="100%"
                                 data={
                                     graficoData
@@ -56,7 +56,7 @@ function BlocoDistribuicao({ area }) {
                                 <RadialBar
                                     dataKey="value"
                                     fill="var(--azulDetaque)"
-                                    cornerRadius={10}
+                                    cornerRadius={5}
                                     background={{ fill: "var(--bordaCor)" }}
                                 />
                             </RadialBarChart>

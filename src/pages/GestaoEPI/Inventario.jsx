@@ -43,11 +43,14 @@ function ModalEmprestimo({ epi, setModalAberto }) {
                             </select>
                             <p><b>Área</b></p>
                             <select name="" id="" disabled={!disponivel}>
-                                <option value="">Área 1</option>
-                                <option value="">Área 2</option>
-                                <option value="">Área 3</option>
-                                <option value="">Área 4</option>
-                                <option value="">Área 5</option>
+                                <option value="Lavra a Céu Aberto">Lavra a Céu Aberto</option>
+                                <option value="Beneficiamento de Minério">Beneficiamento de Minério</option>
+                                <option value="Operação de Equipamentos">Operação de Equipamentos</option>
+                                <option value="Manutenção Mecânica">Manutenção Mecânica</option>
+                                <option value="Transporte e Logística">Transporte e Logística</option>
+                                <option value="Geologia e Pesquisa">Geologia e Pesquisa</option>
+                                <option value="Administração de Mina">Administração de Mina</option>
+                                <option value="Segurança do Trabalho">Segurança do Trabalho</option>
                             </select>
                         </span>
                         <div className='auxBotaoHorizontal'>
