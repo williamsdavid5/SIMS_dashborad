@@ -25,6 +25,7 @@ function BlocoDistribuicao({ area }) {
                                 <p>{epi.epi}: {epi.quantidade}</p>
                             </>
                         ))}
+                        <p><b>Total nesta área: {area.total}</b></p>
                     </div>
                     <div className='direita'>
                         <ResponsiveContainer width="100%" height="100%">
@@ -60,7 +61,7 @@ function BlocoDistribuicao({ area }) {
                                 />
                             </RadialBarChart>
                         </ResponsiveContainer>
-                        {/* <p><b>Total nesta área: {area.total}</b></p> */}
+                        <p>dos EPIs estão nesta área</p>
                     </div>
                 </div>
             </div>
