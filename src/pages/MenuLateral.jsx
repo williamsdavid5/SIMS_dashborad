@@ -38,7 +38,7 @@ export default function MenuLateral() {
                         to="/analises-graficas"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
-                        Análises Grágicas
+                        Análises Gráficas
                     </NavLink>
                     <NavLink
                         to="/emissao-relatorios"
