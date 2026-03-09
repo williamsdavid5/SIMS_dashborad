@@ -141,7 +141,6 @@ export const DashboardProvider = ({ children }) => {
         return dados;
     };
 
-    // Funções de cálculo adaptadas
     const calcularTotalHoje = (dados) => {
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
@@ -149,26 +148,75 @@ export const DashboardProvider = ({ children }) => {
         const amanha = new Date(hoje);
         amanha.setDate(amanha.getDate() + 1);
 
-        // Contar apenas registros com desvio (ocorrências)
-        return dados.filter(item => {
+        console.log('📅 Calculando total do dia:', {
+            hoje: hoje.toISOString(),
+            amanha: amanha.toISOString(),
+            totalRegistros: dados.length
+        });
+
+        // Filtrar registros de hoje com desvio = 1
+        const ocorrenciasHoje = dados.filter(item => {
             try {
                 const dataItem = new Date(item.dataHora);
-                return dataItem >= hoje && dataItem < amanha && item.desvio === 1;
-            } catch {
+                const isHoje = dataItem >= hoje && dataItem < amanha;
+                const temDesvio = item.desvio === 1;
+
+                if (isHoje && temDesvio) {
+                    console.log('✅ Ocorrência hoje:', {
+                        data: item.dataHora,
+                        camera: item.camera,
+                        epis: item.episFaltando
+                    });
+                }
+
+                return isHoje && temDesvio;
+            } catch (error) {
+                console.error('Erro ao processar data:', error);
                 return false;
             }
         }).length;
+
+        console.log(`📊 Total de ocorrências hoje: ${ocorrenciasHoje}`);
+        return ocorrenciasHoje;
     };
 
+    // ============================================
+    // FUNÇÃO CORRIGIDA: calcularTaxaConformidade
+    // ============================================
     const calcularTaxaConformidade = (dados) => {
-        const totalComPessoas = dados.filter(item => item.pessoasDetectadas > 0).length;
-        if (totalComPessoas === 0) return 100;
+        // Total de registros com pessoas detectadas
+        const registrosComPessoas = dados.filter(item => {
+            const temPessoas = item.pessoasDetectadas > 0;
+            if (temPessoas) {
+                console.log('👤 Registro com pessoa:', {
+                    data: item.dataHora,
+                    camera: item.camera,
+                    pessoas: item.pessoasDetectadas,
+                    desvio: item.desvio
+                });
+            }
+            return temPessoas;
+        }).length;
 
-        const conformidades = dados.filter(item =>
+        if (registrosComPessoas === 0) {
+            console.log('⚠️ Nenhum registro com pessoas detectadas');
+            return 100;
+        }
+
+        // Registros com pessoas E SEM desvio (conforme)
+        const registrosConformes = dados.filter(item =>
             item.pessoasDetectadas > 0 && item.desvio === 0
         ).length;
 
-        return Number(((conformidades / totalComPessoas) * 100).toFixed(2));
+        const taxa = Number(((registrosConformes / registrosComPessoas) * 100).toFixed(2));
+
+        console.log('📊 Cálculo da taxa de conformidade:', {
+            registrosComPessoas,
+            registrosConformes,
+            taxa: `${taxa}%`
+        });
+
+        return taxa;
     };
 
     const calcularCameraCritica = (dados) => {
@@ -402,33 +450,103 @@ export const DashboardProvider = ({ children }) => {
             });
 
             console.log('✅ Dados processados:', dadosProcessados.length, 'registros');
-            console.log('📊 Estatísticas rápidas:', {
-                totalRegistros: dadosProcessados.length,
-                ocorrencias: dadosProcessados.filter(d => d.desvio === 1).length,
-                cameras: [...new Set(dadosProcessados.map(d => d.camera))],
-                periodo: {
-                    inicio: dadosProcessados[dadosProcessados.length - 1]?.dataHora,
-                    fim: dadosProcessados[0]?.dataHora
+
+            // ============================================
+            // ANÁLISE DETALHADA DOS DADOS
+            // ============================================
+            console.log('🔍 ANÁLISE DETALHADA DOS DADOS:');
+
+            // Estatísticas gerais
+            const totalComPessoas = dadosProcessados.filter(d => d.pessoasDetectadas > 0).length;
+            const totalComDesvio = dadosProcessados.filter(d => d.desvio === 1).length;
+            const totalSemDesvio = dadosProcessados.filter(d => d.desvio === 0).length;
+
+            console.log('📊 ESTATÍSTICAS GERAIS:');
+            console.log('- Total de registros:', dadosProcessados.length);
+            console.log('- Registros com pessoas:', totalComPessoas);
+            console.log('- Registros com desvio (ocorrências):', totalComDesvio);
+            console.log('- Registros sem desvio:', totalSemDesvio);
+
+            // Análise por data
+            const datas = {};
+            dadosProcessados.forEach(item => {
+                try {
+                    const dataStr = new Date(item.dataHora).toDateString();
+                    if (!datas[dataStr]) {
+                        datas[dataStr] = {
+                            total: 0,
+                            comDesvio: 0,
+                            comPessoas: 0,
+                            conformes: 0
+                        };
+                    }
+                    datas[dataStr].total++;
+                    if (item.desvio === 1) datas[dataStr].comDesvio++;
+                    if (item.pessoasDetectadas > 0) {
+                        datas[dataStr].comPessoas++;
+                        if (item.desvio === 0) datas[dataStr].conformes++;
+                    }
+                } catch (e) { }
+            });
+
+            console.log('📅 DISTRIBUIÇÃO POR DATA:', datas);
+
+            // Verificar dados de hoje especificamente
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const amanha = new Date(hoje);
+            amanha.setDate(amanha.getDate() + 1);
+
+            const dadosHoje = dadosProcessados.filter(item => {
+                try {
+                    const dataItem = new Date(item.dataHora);
+                    return dataItem >= hoje && dataItem < amanha;
+                } catch {
+                    return false;
                 }
             });
 
-            // Calcular todos os indicadores
-            const hoje = calcularTotalHoje(dadosProcessados);
-            const conformidade = calcularTaxaConformidade(dadosProcessados);
-            const critica = calcularCameraCritica(dadosProcessados);
-            const falsos = calcularFalsosPositivos(dadosProcessados);
+            console.log('📊 DADOS DE HOJE:');
+            console.log('- Total registros hoje:', dadosHoje.length);
+            console.log('- Com desvio hoje:', dadosHoje.filter(d => d.desvio === 1).length);
+            console.log('- Com pessoas hoje:', dadosHoje.filter(d => d.pessoasDetectadas > 0).length);
+            console.log('- Amostra (até 3 registros):', dadosHoje.slice(0, 3).map(d => ({
+                data: d.dataHora,
+                pessoas: d.pessoasDetectadas,
+                desvio: d.desvio,
+                epis: d.episFaltando
+            })));
 
-            // CALCULAR GRÁFICOS
+            // ============================================
+            // CALCULAR TODOS OS INDICADORES
+            // ============================================
+
+            // CORRIGIDO: Total de ocorrências hoje
+            const totalOcorrenciasHoje = dadosHoje.filter(item => item.desvio === 1).length;
+            console.log('🎯 Total de ocorrências hoje:', totalOcorrenciasHoje);
+
+            // CORRIGIDO: Taxa de conformidade
+            let taxaConformidadeCalculada = 100;
+            if (totalComPessoas > 0) {
+                const conformes = dadosProcessados.filter(item =>
+                    item.pessoasDetectadas > 0 && item.desvio === 0
+                ).length;
+                taxaConformidadeCalculada = Number(((conformes / totalComPessoas) * 100).toFixed(2));
+            }
+            console.log('🎯 Taxa de conformidade:', taxaConformidadeCalculada + '%');
+
+            // Câmera crítica
+            const cameraCriticaCalculada = calcularCameraCritica(dadosProcessados);
+
+            // Falsos positivos
+            const falsosCalculados = calcularFalsosPositivos(dadosProcessados);
+
+            // Gráficos
             const ocorrenciasTipo = calcularOcorrenciasPorTipo(dadosProcessados);
             const ocorrenciasHora = calcularOcorrenciasPorHora(dadosProcessados);
             const distribuicaoCamera = calcularDistribuicaoPorCamera(dadosProcessados);
 
-            console.log('📊 Resultados dos gráficos:', {
-                tipos: ocorrenciasTipo,
-                horasComOcorrencias: ocorrenciasHora.filter(h => h.Quantidade > 0).length,
-                cameras: distribuicaoCamera.length
-            });
-
+            // Intervalo com mais ocorrências
             const intervaloMais = ocorrenciasHora.reduce((max, item) =>
                 item.Quantidade > max.Quantidade ? item : max
                 , { Hora: '00:00', Quantidade: 0 }).Hora;
@@ -455,13 +573,16 @@ export const DashboardProvider = ({ children }) => {
                 pessoasDetectadas: item.pessoasDetectadas
             }));
 
+            // Análise estatística
             const analise = calcularAnaliseEstatistica(dadosProcessados);
 
-            // Atualizar todos os estados
-            setTotalHoje(hoje);
-            setTaxaConformidade(conformidade);
-            setCameraCritica(critica);
-            setFalsosPositivos(falsos);
+            // ============================================
+            // ATUALIZAR TODOS OS ESTADOS
+            // ============================================
+            setTotalHoje(totalOcorrenciasHoje);
+            setTaxaConformidade(taxaConformidadeCalculada);
+            setCameraCritica(cameraCriticaCalculada);
+            setFalsosPositivos(falsosCalculados);
             setIntervaloMaisOcorrencias(intervaloMais);
             setOcorrenciasPorTipoData(ocorrenciasTipo.length > 0 ? ocorrenciasTipo : [
                 { tipo: "Capacete", Quantidade: 0 },
@@ -479,14 +600,23 @@ export const DashboardProvider = ({ children }) => {
             setHistoricoCompleto(historico);
             setAnaliseEstatistica(analise);
 
+            // Log final
+            console.log('✅ DASHBOARD ATUALIZADO:');
+            console.log('- Total hoje:', totalOcorrenciasHoje);
+            console.log('- Taxa conformidade:', taxaConformidadeCalculada + '%');
+            console.log('- Câmera crítica:', cameraCriticaCalculada);
+            console.log('- Falsos positivos:', falsosCalculados);
+            console.log('- Intervalo crítico:', intervaloMais);
+
             setLoading(false);
 
         } catch (err) {
-            console.error('Erro ao carregar dados:', err);
+            console.error('❌ Erro ao carregar dados:', err);
             setError(err.message);
             setLoading(false);
 
             // Dados de fallback
+            console.log('⚠️ Usando dados de fallback');
             setTotalHoje(15);
             setTaxaConformidade(87.5);
             setCameraCritica('CAM01');
