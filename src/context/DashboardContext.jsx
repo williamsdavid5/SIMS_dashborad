@@ -13,7 +13,7 @@ export const useDashboard = () => {
 // - 500: Bom equilíbrio (recomendado para produção)
 // - 1000: Mais precisão (pode ficar lento)
 // - 2000: Máxima precisão (apenas para dados muito críticos)
-const MAX_REGISTROS = 300;
+const MAX_REGISTROS = 500;
 
 export const DashboardProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
@@ -49,6 +49,7 @@ export const DashboardProvider = ({ children }) => {
         if (!dataHoraStr) return new Date();
 
         try {
+            // Formato esperado: "2026-03-07 12:41:52"
             const [data, hora] = dataHoraStr.split(' ');
             if (!data || !hora) return new Date();
 
@@ -65,16 +66,21 @@ export const DashboardProvider = ({ children }) => {
         if (!cameraCompleta) return 'CAM00';
 
         try {
-            if (cameraCompleta.startsWith('CAM')) {
-                return cameraCompleta;
-            }
-
+            // Formato: "GSL-1919-GLC-4821-CAM01"
             const partes = cameraCompleta.split('-');
-            const ultimaParte = partes[partes.length - 1];
-            return ultimaParte.replace(/,/g, '').trim();
+            return partes[partes.length - 1] || 'CAM00';
         } catch (error) {
             return 'CAM00';
         }
+    };
+
+    // Processar EPIs faltando da string
+    const processarEPIsFaltando = (episStr) => {
+        if (!episStr || episStr === '""' || episStr === '') return [];
+
+        // Remove aspas se houver e divide por vírgula
+        const episLimpo = episStr.replace(/"/g, '');
+        return episLimpo.split(',').map(epi => epi.trim()).filter(epi => epi);
     };
 
     const processarCSV = (texto) => {
@@ -93,17 +99,41 @@ export const DashboardProvider = ({ children }) => {
 
         const dados = linhasLimitadas.map((linha, index) => {
             try {
-                const valores = linha.split(',');
-                if (valores.length < 4) return null;
+                // CSV com campos que podem conter vírgulas dentro de strings
+                const valores = linha.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+                if (valores.length < 6) return null;
+
+                const timestamp = valores[0]?.trim();
+                const camera = valores[1]?.trim();
+                const pessoasDetectadas = parseInt(valores[2]?.trim()) || 0;
+                const episDetectados = parseInt(valores[3]?.trim()) || 0;
+                const episFaltando = valores[4]?.trim() || '';
+                const desvio = parseInt(valores[5]?.trim()) || 0;
+
+                // Determinar status baseado nos dados
+                let status = 'PRESENTE';
+                let epi = '';
+
+                if (desvio === 1 && episFaltando) {
+                    status = 'AUSENTE';
+                    // Pega o primeiro EPI faltando como exemplo
+                    const episLista = processarEPIsFaltando(episFaltando);
+                    epi = episLista[0] || 'EPI Desconhecido';
+                }
 
                 return {
                     id: index + 1,
-                    dataHora: parseDataHora(valores[0]?.trim()),
-                    epi: valores[1]?.trim() || '',
-                    status: valores[2]?.trim() || '',
-                    camera: extrairNomeCamera(valores[3]?.trim() || '')
+                    dataHora: parseDataHora(timestamp),
+                    camera: extrairNomeCamera(camera),
+                    epi: epi,
+                    status: status,
+                    pessoasDetectadas,
+                    episDetectados,
+                    episFaltando: processarEPIsFaltando(episFaltando),
+                    desvio
                 };
             } catch (error) {
+                console.error('Erro ao processar linha:', error);
                 return null;
             }
         }).filter(item => item !== null);
@@ -111,7 +141,7 @@ export const DashboardProvider = ({ children }) => {
         return dados;
     };
 
-    // Funções de cálculo (mantidas iguais)
+    // Funções de cálculo adaptadas
     const calcularTotalHoje = (dados) => {
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
@@ -119,10 +149,11 @@ export const DashboardProvider = ({ children }) => {
         const amanha = new Date(hoje);
         amanha.setDate(amanha.getDate() + 1);
 
+        // Contar apenas registros com desvio (ocorrências)
         return dados.filter(item => {
             try {
                 const dataItem = new Date(item.dataHora);
-                return dataItem >= hoje && dataItem < amanha;
+                return dataItem >= hoje && dataItem < amanha && item.desvio === 1;
             } catch {
                 return false;
             }
@@ -130,16 +161,19 @@ export const DashboardProvider = ({ children }) => {
     };
 
     const calcularTaxaConformidade = (dados) => {
-        const total = dados.length;
-        if (total === 0) return 0;
+        const totalComPessoas = dados.filter(item => item.pessoasDetectadas > 0).length;
+        if (totalComPessoas === 0) return 100;
 
-        const presentes = dados.filter(item => item.status?.toUpperCase() === 'PRESENTE').length;
-        return Number(((presentes / total) * 100).toFixed(2));
+        const conformidades = dados.filter(item =>
+            item.pessoasDetectadas > 0 && item.desvio === 0
+        ).length;
+
+        return Number(((conformidades / totalComPessoas) * 100).toFixed(2));
     };
 
     const calcularCameraCritica = (dados) => {
         const ocorrenciasPorCamera = dados.reduce((acc, item) => {
-            if (item.status?.toUpperCase() === 'AUSENTE') {
+            if (item.desvio === 1) {
                 const camera = item.camera || 'CAM00';
                 acc[camera] = (acc[camera] || 0) + 1;
             }
@@ -160,18 +194,19 @@ export const DashboardProvider = ({ children }) => {
     };
 
     const calcularFalsosPositivos = (dados) => {
-        const LIMIAR_TEMPO = 5 * 60 * 1000;
+        const LIMIAR_TEMPO = 3 * 1000; // 3 segundos
         let falsos = 0;
 
         dados.forEach((item, index) => {
-            if (index > 0) {
+            if (index > 0 && item.desvio === 1) {
                 try {
                     const itemAnterior = dados[index - 1];
-                    if (item.camera === itemAnterior.camera &&
-                        item.epi === itemAnterior.epi &&
-                        item.status !== itemAnterior.status) {
 
+                    // Se o registro anterior também tem desvio e é da mesma câmera
+                    if (itemAnterior.desvio === 1 && item.camera === itemAnterior.camera) {
                         const diffTempo = new Date(item.dataHora) - new Date(itemAnterior.dataHora);
+
+                        // Se a diferença é muito pequena, pode ser falso positivo
                         if (diffTempo < LIMIAR_TEMPO && diffTempo > 0) {
                             falsos++;
                         }
@@ -183,43 +218,32 @@ export const DashboardProvider = ({ children }) => {
         return falsos;
     };
 
-
-    // ============================================
-    // FUNÇÃO CORRIGIDA: Ocorrências por tipo
-    // ============================================
     const calcularOcorrenciasPorTipo = (dados) => {
-        // Mapeamento correto dos EPIs (considerando possíveis variações)
-        const tipos = ['Capacete', 'Oculos', 'Luva', 'Mascara', 'Bota', 'Abafador'];
+        const tipos = ['capacete', 'oculos', 'luva', 'mascara', 'bota', 'abafador'];
 
         console.log('📊 Calculando ocorrências por tipo...');
-        console.log('Total de registros:', dados.length);
-        console.log('Amostra de status:', dados.slice(0, 5).map(d => ({ epi: d.epi, status: d.status })));
 
         const resultados = tipos.map(tipo => {
-            // Contar apenas AUSENTES (independente de maiúsculas/minúsculas)
             const quantidade = dados.filter(item => {
-                const epiMatch = item.epi?.toLowerCase() === tipo.toLowerCase();
-                const statusAusente = item.status?.toUpperCase() === 'AUSENTE';
-                return epiMatch && statusAusente;
+                if (item.desvio !== 1) return false;
+
+                // Verificar se este EPI específico está na lista de faltando
+                return item.episFaltando.some(epi =>
+                    epi.toLowerCase().includes(tipo.toLowerCase())
+                );
             }).length;
 
-            console.log(`${tipo}: ${quantidade} ocorrências`);
-
             return {
-                tipo: tipo === 'Oculos' ? 'Óculos' : tipo,
+                tipo: tipo === 'oculos' ? 'Óculos' :
+                    tipo.charAt(0).toUpperCase() + tipo.slice(1),
                 Quantidade: quantidade
             };
         }).filter(item => item.Quantidade > 0);
 
-        // Se não houver dados, retorna array vazio (o gráfico ficará vazio)
         return resultados;
     };
 
-    // ============================================
-    // FUNÇÃO CORRIGIDA: Ocorrências por hora (24 horas)
-    // ============================================
     const calcularOcorrenciasPorHora = (dados) => {
-        // Array de 24 horas (00:00 às 23:00)
         const horas = Array.from({ length: 24 }, (_, i) =>
             `${String(i).padStart(2, '0')}:00`
         );
@@ -231,10 +255,8 @@ export const DashboardProvider = ({ children }) => {
 
             const quantidade = dados.filter(item => {
                 try {
-                    // Verificar se é ausente
-                    if (item.status?.toUpperCase() !== 'AUSENTE') return false;
+                    if (item.desvio !== 1) return false;
 
-                    // Extrair hora do registro
                     const dataItem = new Date(item.dataHora);
                     const horaItem = dataItem.getHours();
 
@@ -250,17 +272,15 @@ export const DashboardProvider = ({ children }) => {
             };
         });
 
-        // Log para debug (mostrar apenas horas com ocorrências)
         const horasComOcorrencias = resultados.filter(r => r.Quantidade > 0);
         console.log('Horas com ocorrências:', horasComOcorrencias);
 
         return resultados;
     };
 
-
     const calcularDistribuicaoPorCamera = (dados) => {
         const ocorrencias = dados.reduce((acc, item) => {
-            if (item.status?.toUpperCase() === 'AUSENTE') {
+            if (item.desvio === 1) {
                 const camera = item.camera || 'CAM00';
                 acc[camera] = (acc[camera] || 0) + 1;
             }
@@ -274,23 +294,29 @@ export const DashboardProvider = ({ children }) => {
     };
 
     const calcularAnaliseEstatistica = (dados) => {
+        // Calcular dias únicos com ocorrências
         const datasUnicas = new Set();
         dados.forEach(item => {
             try {
-                datasUnicas.add(new Date(item.dataHora).toDateString());
+                if (item.desvio === 1) {
+                    datasUnicas.add(new Date(item.dataHora).toDateString());
+                }
             } catch { }
         });
 
+        const ocorrenciasTotais = dados.filter(item => item.desvio === 1).length;
         const mediaDiaria = datasUnicas.size > 0 ?
-            Math.round(dados.length / datasUnicas.size) : 0;
+            Math.round(ocorrenciasTotais / datasUnicas.size) : 0;
 
-        const ausenciasPorEPI = dados
-            .filter(item => item.status?.toUpperCase() === 'AUSENTE')
-            .reduce((acc, item) => {
-                const epi = item.epi || 'Desconhecido';
-                acc[epi] = (acc[epi] || 0) + 1;
-                return acc;
-            }, {});
+        // EPI mais crítico
+        const ausenciasPorEPI = {};
+        dados.forEach(item => {
+            if (item.desvio === 1) {
+                item.episFaltando.forEach(epi => {
+                    ausenciasPorEPI[epi] = (ausenciasPorEPI[epi] || 0) + 1;
+                });
+            }
+        });
 
         let epiMaisCritico = 'Capacete';
         let maxAusencias = 0;
@@ -301,13 +327,14 @@ export const DashboardProvider = ({ children }) => {
             }
         });
 
-        const incidenciaPorCamera = dados
-            .filter(item => item.status?.toUpperCase() === 'AUSENTE')
-            .reduce((acc, item) => {
+        // Câmera com maior incidência
+        const incidenciaPorCamera = dados.reduce((acc, item) => {
+            if (item.desvio === 1) {
                 const camera = item.camera || 'CAM00';
                 acc[camera] = (acc[camera] || 0) + 1;
-                return acc;
-            }, {});
+            }
+            return acc;
+        }, {});
 
         let cameraMaiorIncidencia = 'CAM00';
         let maxIncidencia = 0;
@@ -318,12 +345,13 @@ export const DashboardProvider = ({ children }) => {
             }
         });
 
+        // Total da última semana
         const umaSemanaAtras = new Date();
         umaSemanaAtras.setDate(umaSemanaAtras.getDate() - 7);
 
         const totalSemana = dados.filter(item => {
             try {
-                return new Date(item.dataHora) >= umaSemanaAtras;
+                return item.desvio === 1 && new Date(item.dataHora) >= umaSemanaAtras;
             } catch {
                 return false;
             }
@@ -332,9 +360,10 @@ export const DashboardProvider = ({ children }) => {
         return {
             mediaDiaria,
             totalSemana,
-            mediaSemanal: Math.round(dados.length / 4) || 0,
-            mediaTempoSemEPI: '2m 23s',
-            epiMaisCritico: epiMaisCritico === 'Oculos' ? 'Óculos' : epiMaisCritico,
+            mediaSemanal: Math.round(ocorrenciasTotais / 4) || 0, // Aproximadamente 4 semanas
+            mediaTempoSemEPI: '2m 23s', // Mantido como exemplo
+            epiMaisCritico: epiMaisCritico === 'oculos' ? 'Óculos' :
+                epiMaisCritico.charAt(0).toUpperCase() + epiMaisCritico.slice(1),
             cameraMaiorIncidencia
         };
     };
@@ -344,7 +373,7 @@ export const DashboardProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            const response = await fetch('/historico_ocorrencias.csv');
+            const response = await fetch('/monitoramento_epi.csv');
 
             if (!response.ok) {
                 throw new Error(`Erro ao carregar arquivo: ${response.status}`);
@@ -373,14 +402,15 @@ export const DashboardProvider = ({ children }) => {
             });
 
             console.log('✅ Dados processados:', dadosProcessados.length, 'registros');
-            console.log('📋 Primeiros 5 registros:', dadosProcessados.slice(0, 5));
-
-            // Análise de distribuição dos status
-            const statusCount = dadosProcessados.reduce((acc, item) => {
-                acc[item.status] = (acc[item.status] || 0) + 1;
-                return acc;
-            }, {});
-            console.log('📊 Distribuição de status:', statusCount);
+            console.log('📊 Estatísticas rápidas:', {
+                totalRegistros: dadosProcessados.length,
+                ocorrencias: dadosProcessados.filter(d => d.desvio === 1).length,
+                cameras: [...new Set(dadosProcessados.map(d => d.camera))],
+                periodo: {
+                    inicio: dadosProcessados[dadosProcessados.length - 1]?.dataHora,
+                    fim: dadosProcessados[0]?.dataHora
+                }
+            });
 
             // Calcular todos os indicadores
             const hoje = calcularTotalHoje(dadosProcessados);
@@ -388,41 +418,41 @@ export const DashboardProvider = ({ children }) => {
             const critica = calcularCameraCritica(dadosProcessados);
             const falsos = calcularFalsosPositivos(dadosProcessados);
 
-            // CALCULAR GRÁFICOS COM AS FUNÇÕES CORRIGIDAS
+            // CALCULAR GRÁFICOS
             const ocorrenciasTipo = calcularOcorrenciasPorTipo(dadosProcessados);
             const ocorrenciasHora = calcularOcorrenciasPorHora(dadosProcessados);
             const distribuicaoCamera = calcularDistribuicaoPorCamera(dadosProcessados);
 
-            console.log('📊 Resultados dos gráficos:');
-            console.log('- Por tipo:', ocorrenciasTipo);
-            console.log('- Por hora (amostra):', ocorrenciasHora.slice(0, 5));
-            console.log('- Por câmera:', distribuicaoCamera);
+            console.log('📊 Resultados dos gráficos:', {
+                tipos: ocorrenciasTipo,
+                horasComOcorrencias: ocorrenciasHora.filter(h => h.Quantidade > 0).length,
+                cameras: distribuicaoCamera.length
+            });
 
             const intervaloMais = ocorrenciasHora.reduce((max, item) =>
                 item.Quantidade > max.Quantidade ? item : max
                 , { Hora: '00:00', Quantidade: 0 }).Hora;
 
-            const ausencias = dadosProcessados.filter(item =>
-                item.status?.toUpperCase() === 'AUSENTE'
-            );
-
-            const ultimas = ausencias.slice(0, 15).map((item, index) => ({
+            // Últimas ocorrências (apenas desvios)
+            const ocorrencias = dadosProcessados.filter(item => item.desvio === 1);
+            const ultimas = ocorrencias.slice(0, 15).map((item, index) => ({
                 id: index + 1,
                 data: item.dataHora.toISOString(),
                 camera: item.camera,
-                item: item.epi === 'Oculos' ? 'Óculos' : item.epi,
+                item: item.episFaltando.join(', ') || 'Múltiplos EPIs',
                 imagemUrl: `/imagens/oc${(index % 3) + 1}.jpg`
             }));
 
-            const historico = dadosProcessados.map((item, index) => ({
+            // Histórico completo para a tabela
+            const historico = dadosProcessados.slice(0, 100).map((item, index) => ({
                 id: index + 1,
                 data: item.dataHora.toISOString(),
                 camera: item.camera,
-                item: item.epi === 'Oculos' ? 'Óculos' : item.epi,
+                item: item.episFaltando.join(', ') || 'Nenhum',
                 imagemUrl: `/imagens/oc${(index % 3) + 1}.jpg`,
-                confianca: Number((0.7 + Math.random() * 0.28).toFixed(2)),
-                status: item.status?.toUpperCase() === 'PRESENTE' ? 'Confirmado' :
-                    item.status?.toUpperCase() === 'AUSENTE' ? 'Não confirmado' : 'Em análise'
+                confianca: Number((0.85 + Math.random() * 0.14).toFixed(2)),
+                status: item.desvio === 1 ? 'Não confirmado' : 'Confirmado',
+                pessoasDetectadas: item.pessoasDetectadas
             }));
 
             const analise = calcularAnaliseEstatistica(dadosProcessados);
@@ -436,7 +466,7 @@ export const DashboardProvider = ({ children }) => {
             setOcorrenciasPorTipoData(ocorrenciasTipo.length > 0 ? ocorrenciasTipo : [
                 { tipo: "Capacete", Quantidade: 0 },
                 { tipo: "Óculos", Quantidade: 0 },
-                { tipo: "Luvas", Quantidade: 0 }
+                { tipo: "Luva", Quantidade: 0 }
             ]);
             setOcorrenciasPorHoraData(ocorrenciasHora);
             setDistribuicaoPorCameraData(distribuicaoCamera.length > 0 ? distribuicaoCamera : [
@@ -457,31 +487,34 @@ export const DashboardProvider = ({ children }) => {
             setLoading(false);
 
             // Dados de fallback
-            setTotalHoje(27);
-            setTaxaConformidade(91.23);
-            setCameraCritica('CAM03');
-            setFalsosPositivos(4);
-            setIntervaloMaisOcorrencias('10:00');
+            setTotalHoje(15);
+            setTaxaConformidade(87.5);
+            setCameraCritica('CAM01');
+            setFalsosPositivos(3);
+            setIntervaloMaisOcorrencias('12:00');
             setOcorrenciasPorTipoData([
-                { tipo: "Capacete", Quantidade: 3 },
-                { tipo: "Óculos", Quantidade: 12 },
-                { tipo: "Luvas", Quantidade: 10 }
+                { tipo: "Capacete", Quantidade: 5 },
+                { tipo: "Óculos", Quantidade: 8 },
+                { tipo: "Luva", Quantidade: 4 },
+                { tipo: "Mascara", Quantidade: 2 }
             ]);
             setOcorrenciasPorHoraData([
-                { Hora: "07:00", Quantidade: 3 },
-                { Hora: "08:00", Quantidade: 0 },
-                { Hora: "09:00", Quantidade: 2 },
-                { Hora: "10:00", Quantidade: 4 },
-                { Hora: "11:00", Quantidade: 0 },
-                { Hora: "12:00", Quantidade: 1 },
-                { Hora: "13:00", Quantidade: 1 },
-                { Hora: "14:00", Quantidade: 3 }
+                { Hora: "08:00", Quantidade: 2 },
+                { Hora: "09:00", Quantidade: 1 },
+                { Hora: "10:00", Quantidade: 3 },
+                { Hora: "11:00", Quantidade: 4 },
+                { Hora: "12:00", Quantidade: 5 },
+                { Hora: "13:00", Quantidade: 3 },
+                { Hora: "14:00", Quantidade: 2 },
+                { Hora: "15:00", Quantidade: 1 },
+                { Hora: "16:00", Quantidade: 2 },
+                { Hora: "17:00", Quantidade: 1 }
             ]);
             setDistribuicaoPorCameraData([
-                { camera: "CAM01", Quantidade: 3 },
-                { camera: "CAM02", Quantidade: 6 },
-                { camera: "CAM03", Quantidade: 7 },
-                { camera: "CAM04", Quantidade: 4 }
+                { camera: "CAM01", Quantidade: 8 },
+                { camera: "CAM02", Quantidade: 4 },
+                { camera: "CAM03", Quantidade: 6 },
+                { camera: "CAM04", Quantidade: 3 }
             ]);
         }
     };
