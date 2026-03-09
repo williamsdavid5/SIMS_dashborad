@@ -35,22 +35,22 @@ export default function MenuLateral() {
                         Gestão de EPIs
                     </NavLink>
                     <NavLink
-                        to="/home"
+                        to="/analises-graficas"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
-                        Função 2
+                        Análises Grágicas
                     </NavLink>
                     <NavLink
-                        to="/home"
+                        to="/emissao-relatorios"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
-                        Função 3
+                        Emissão de relatórios
                     </NavLink>
                     <NavLink
-                        to="/home"
+                        to="/monitoramento"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
-                        Função 4
+                        Monitoramento ao vivo
                     </NavLink>
                 </div>
             </aside>

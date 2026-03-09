@@ -1,0 +1,87 @@
+.camerasBlocos {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: auto;
+    min-height: auto;
+    padding: 20px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-auto-rows: 280px;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.blocoGraficoGeralCamreas {
+    background-color: var(--corJanela);
+    border-radius: 10px;
+    grid-column: span 3;
+    grid-row: span 2;
+    display: blick;
+    /* align-items: center;
+    justify-content: center; */
+}
+
+.divAuxGraficoCameras {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.blocoCamera {
+    background-color: var(--corJanela);
+    border-radius: 10px;
+    padding: 20PX;
+    display: flex;
+    flex-direction: column;
+    min-width: auto;
+    min-height: auto;
+}
+
+.blocoCamera .esquerda {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: auto;
+    min-height: auto;
+}
+
+.blocoCamera .direita {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: auto;
+    min-height: auto;
+}
+
+@media (max-width: 900px) {
+
+    .blocoGraficoGeralCamreas {
+        /* grid-column: span 2; */
+        overflow-x: auto;
+    }
+
+    .divAuxGraficoCameras {
+        min-width: 700px;
+    }
+
+}
+
+@media (max-width: 850px) {
+    .blocoGraficoGeralCamreas {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+}
+
+@media (max-width: 550px) {
+    .blocoGraficoGeralCamreas {
+        grid-column: span 1;
+    }
+}

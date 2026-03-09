@@ -13,7 +13,7 @@ export const useDashboard = () => {
 // - 500: Bom equilíbrio (recomendado para produção)
 // - 1000: Mais precisão (pode ficar lento)
 // - 2000: Máxima precisão (apenas para dados muito críticos)
-const MAX_REGISTROS = 2000;
+const MAX_REGISTROS = 300;
 
 export const DashboardProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);

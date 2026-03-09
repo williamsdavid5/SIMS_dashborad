@@ -7,6 +7,9 @@ import Historico from "./pages/GestaoEPI/Historico";
 import Inventario from "./pages/GestaoEPI/Inventario";
 import Estoque from "./pages/GestaoEPI/Estoque";
 import Distribuicao from "./pages/GestaoEPI/Distribuicao";
+import Monitoramento from "./pages/Monitoramento";
+import EmissaoRelatorios from "./pages/EmissaoRelatorios";
+import AnalisesGraficas from "./pages/AnalisesGraficas";
 
 import './App.css'
 
@@ -23,6 +26,9 @@ function App() {
         <Route path="historico" element={<Historico />} />
         <Route path="estoque" element={<Estoque />} />
       </Route>
+      <Route path="monitoramento" element={<Monitoramento />} />
+      <Route path="emissao-relatorios" element={<EmissaoRelatorios />} />
+      <Route path="analises-graficas" element={<AnalisesGraficas />} />
     </Routes>
   );
 }
