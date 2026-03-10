@@ -8,3 +8,13 @@
     gap: 20px;
     overflow-y: auto;
 }
+
+.sazonalidade {
+    grid-column: span 2;
+    grid-row: span 1;
+}
+
+.evolucaoConformidade {
+    grid-column: span 4;
+    grid-row: span 1;
+}
