@@ -6,7 +6,7 @@ export default function AnalisesGraficas() {
         <>
             <main className="dashboardMain">
                 <MenuLateral></MenuLateral>
-                <section className="mainGestaoEPI">
+                <section className="principalDash">
                     <header className="superiorDash superiorGestaoEPI">
                         <h1>Análises gráficas</h1>
                         <p>Tenha o controle de todos os dados coletados pelo sistema com um feedback visual.</p>
