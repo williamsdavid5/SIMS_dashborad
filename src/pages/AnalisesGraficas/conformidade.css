@@ -111,7 +111,7 @@
 
     .diasDaSemana {
         grid-column: span 1;
-        grid-row: span 1;
+        grid-row: span 2;
     }
 
     .mediaMovel {

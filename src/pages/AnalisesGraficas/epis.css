@@ -1,0 +1,20 @@
+.porEPI {
+    grid-column: span 4;
+    grid-row: span 2;
+}
+
+.auxiliarPorEpi {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    .porEPI {
+        overflow-y: auto;
+        grid-column: span 1;
+    }
+
+    .auxiliarPorEpi {
+        width: 600px;
+    }
+}
