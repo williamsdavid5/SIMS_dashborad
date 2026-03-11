@@ -27,6 +27,16 @@
     grid-row: span 1;
 }
 
+.mediaMovel {
+    grid-column: span 4;
+    grid-row: span 2;
+}
+
+.diasDaSemana {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
 @media (max-width: 1300px) {
     .sazonalidade {
         grid-column: span 3;
@@ -39,7 +49,19 @@
     }
 
     .tendenciaConformidade {
-        grid-column: span 3;
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+}
+
+@media (max-width: 900px) {
+    .diasDaSemana {
+        grid-column: span 4;
+        grid-row: span 2;
+    }
+
+    .tendenciaConformidade {
+        grid-column: span 4;
         grid-row: span 1;
     }
 }
@@ -50,15 +72,20 @@
         grid-row: span 1;
     }
 
-    .evolucaoConformidade {
+    /* .evolucaoConformidade {
         grid-column: span 2;
         grid-row: span 2;
-    }
+    } */
 
-    .tendenciaConformidade {
-        grid-column: span 2;
+    /* .tendenciaConformidade {
+        grid-column: span 4;
         grid-row: span 1;
     }
+
+    .diasDaSemana {
+        grid-column: span 4;
+        grid-row: span 2;
+    } */
 }
 
 @media (max-width: 500px) {
@@ -73,6 +100,21 @@
     }
 
     .tendenciaConformidade {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+
+    .tendenciaConformidade {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+
+    .diasDaSemana {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+
+    .mediaMovel {
         grid-column: span 1;
         grid-row: span 1;
     }

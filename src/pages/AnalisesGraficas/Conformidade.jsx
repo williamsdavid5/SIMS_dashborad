@@ -18,7 +18,11 @@ import {
     AreaChart,
     Area,
     Brush,
-    Cell
+    Cell,
+    RadarChart,
+    Radar,
+    PolarGrid,
+    PolarRadiusAxis,
 } from "recharts";
 
 export default function Conformidade() {
@@ -107,6 +111,28 @@ export default function Conformidade() {
         { dia: "30", conformidade: 95 }
     ];
 
+    const dadosMediaMovel = dadosTendencia30Dias.map((item, index, array) => {
+        const janela = array.slice(Math.max(0, index - 6), index + 1);
+
+        const media =
+            janela.reduce((acc, val) => acc + val.conformidade, 0) / janela.length;
+
+        return {
+            ...item,
+            mediaMovel: Number(media.toFixed(2))
+        };
+    });
+
+    const dadosRadarSemana = [
+        { dia: "Seg", conformidade: 92 },
+        { dia: "Ter", conformidade: 90 },
+        { dia: "Qua", conformidade: 91 },
+        { dia: "Qui", conformidade: 93 },
+        { dia: "Sex", conformidade: 89 },
+        { dia: "Sáb", conformidade: 86 },
+        { dia: "Dom", conformidade: 84 }
+    ];
+
     return (
         <>
             <main className='conformidadeMain'>
@@ -183,7 +209,29 @@ export default function Conformidade() {
                             /> </RadialBarChart>
                     </ResponsiveContainer>
                 </div>
+                <div className='distribuicaoBloco diasDaSemana'>
+                    <h3>Conformidade média entre os 7 dias da semana</h3>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart data={dadosRadarSemana}>
+                            <PolarGrid />
+
+                            <PolarAngleAxis dataKey="dia" />
+
+                            <PolarRadiusAxis domain={[65, 100]} />
+
+                            <Tooltip />
+
+                            <Radar
+                                dataKey="conformidade"
+                                stroke="var(--azulDetaque)"
+                                fill="var(--azulDestaque)"
+                                fillOpacity={0.3}
+                            />
+                        </RadarChart>
+                    </ResponsiveContainer>
+                </div>
                 <div className='distribuicaoBloco tendenciaConformidade'>
+                    <p><b>Tendência de conformidade para os últimos 30 dias</b></p>
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={dadosTendencia30Dias}>
                             <CartesianGrid strokeDasharray="3 3" />
@@ -206,6 +254,46 @@ export default function Conformidade() {
                                 dataKey="conformidade"
                                 stroke="var(--azulDestaque)"
                                 strokeWidth={2}
+                                dot={false}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className='distribuicaoBloco mediaMovel'>
+                    <p><b>Média móvel de conformidade nos últimos 30 dias</b></p>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={dadosMediaMovel}>
+                            <CartesianGrid strokeDasharray="3 3" />
+
+                            <XAxis dataKey="dia" />
+
+                            <YAxis domain={[80, 100]} />
+
+                            <Tooltip />
+
+                            <ReferenceLine
+                                y={95}
+                                stroke="red"
+                                strokeDasharray="5 5"
+                                label="Meta 95%"
+                            />
+
+                            {/* valores reais */}
+                            <Line
+                                type="linear"
+                                dataKey="conformidade"
+                                stroke="var(--bordaCor)"
+                                strokeWidth={2}
+                                strokeDasharray="4 4"
+                                dot={false}
+                            />
+
+                            {/* média móvel */}
+                            <Line
+                                type="monotone"
+                                dataKey="mediaMovel"
+                                stroke="var(--azulDestaque)"
+                                strokeWidth={3}
                                 dot={false}
                             />
                         </LineChart>
@@ -234,7 +322,7 @@ export default function Conformidade() {
                     </ResponsiveContainer>
                 </div>
                 <div className='distribuicaoBloco evolucaoConformidade'>
-                    <p><b>Evolição de conformidade (últimos 12 meses)</b></p>
+                    <p><b>Evolução de conformidade (últimos 12 meses)</b></p>
                     {/* <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={dadosEvolucaoConformidade}>
                             <CartesianGrid strokeDasharray="3 3" />
