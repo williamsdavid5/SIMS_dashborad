@@ -8,13 +8,78 @@
     min-width: 0;
 }
 
+.epiOrdem {
+    grid-column: span 2;
+    grid-row: span 3;
+}
+
+.tresMaisCriticos {
+    grid-column: span 2;
+    grid-row: span 1;
+}
+
+.auxTresEpisCriticos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    flex: 1;
+    font-family: 'Open sans';
+    color: var(--textoCor);
+}
+
+.episPizza {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+@media (max-width: 1300px) {
+    .episPizza {
+        grid-column: span 3;
+        grid-row: span 2;
+    }
+
+    .tresMaisCriticos h2 {
+        font-size: 20px;
+
+    }
+}
+
+@media (max-width: 1300px) {
+    .tresMaisCriticos {
+        grid-column: span 3;
+    }
+
+    .epiOrdem {
+        grid-column: span 3;
+    }
+}
+
 @media (max-width: 600px) {
     .porEPI {
         overflow-y: auto;
-        grid-column: span 1;
+        grid-column: span 3;
     }
 
     .auxiliarPorEpi {
         width: 600px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .porEPI,
+    .tresMaisCriticos,
+    .epiOrdem,
+    .episPizza {
+        grid-column: span 1;
+    }
+
+    .tresMaisCriticos h2 {
+        font-size: 14px;
+    }
+
+    .episPizza {
+        grid-row: span 3;
     }
 }
