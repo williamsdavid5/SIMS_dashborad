@@ -24,10 +24,35 @@
     color: var(--azulDestaque);
 }
 
+.graficoDeAreaPorArea {
+    grid-column: span 4;
+    grid-row: span 2;
+}
+
+.graficoEpisPorArea {
+    grid-column: span 4;
+    grid-row: span 2;
+    overflow-y: auto;
+}
+
+.auxiliarComparaçãoEPI {
+    width: 1400px;
+    height: 100%;
+}
+
 @media (max-width: 1400px) {
     .porArea {
         grid-column: span 3;
         grid-row: span 3;
+    }
+
+    .graficoDeAreaPorArea {
+        grid-column: span 3;
+        grid-row: span 2;
+    }
+
+    .graficoEpisPorArea {
+        grid-column: span 3;
     }
 }
 
@@ -35,6 +60,17 @@
     .porArea {
         grid-column: span 2;
         grid-row: span 3;
+    }
+}
+
+@media (max-width:800px) {
+    .graficoDeAreaPorArea {
+        grid-column: span 2;
+        grid-row: span 2;
+    }
+
+    .graficoEpisPorArea {
+        grid-column: span 2;
     }
 }
 
@@ -53,10 +89,24 @@
         grid-column: span 1;
         grid-row: span 1;
     }
+
+    .radaArea h1 {
+        font-size: 20px;
+    }
+
+    .graficoEpisPorArea {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
 }
 
 @media (max-width:560px) {
     .porArea {
         grid-column: span 1;
+    }
+
+    .graficoDeAreaPorArea {
+        grid-column: span 1;
+        grid-row: span 2;
     }
 }

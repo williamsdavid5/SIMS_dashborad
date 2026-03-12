@@ -41,9 +41,6 @@ export const DashboardProvider = ({ children }) => {
         cameraMaiorIncidencia: ''
     });
 
-    // Log para monitorar performance
-    console.log(`🔧 Dashboard configurado com MAX_REGISTROS = ${MAX_REGISTROS}`);
-
     // Função para processar a data/hora do CSV
     const parseDataHora = (dataHoraStr) => {
         if (!dataHoraStr) return new Date();
@@ -95,8 +92,6 @@ export const DashboardProvider = ({ children }) => {
         // ⚡ APLICA O LIMITE DE REGISTROS ⚡
         const linhasLimitadas = linhasDados.slice(0, MAX_REGISTROS);
 
-        console.log(`📊 Processando ${linhasLimitadas.length} de ${linhasDados.length} registros (limite: ${MAX_REGISTROS})`);
-
         const dados = linhasLimitadas.map((linha, index) => {
             try {
                 // CSV com campos que podem conter vírgulas dentro de strings
@@ -133,7 +128,6 @@ export const DashboardProvider = ({ children }) => {
                     desvio
                 };
             } catch (error) {
-                console.error('Erro ao processar linha:', error);
                 return null;
             }
         }).filter(item => item !== null);
@@ -148,12 +142,6 @@ export const DashboardProvider = ({ children }) => {
         const amanha = new Date(hoje);
         amanha.setDate(amanha.getDate() + 1);
 
-        console.log('📅 Calculando total do dia:', {
-            hoje: hoje.toISOString(),
-            amanha: amanha.toISOString(),
-            totalRegistros: dados.length
-        });
-
         // Filtrar registros de hoje com desvio = 1
         const ocorrenciasHoje = dados.filter(item => {
             try {
@@ -161,22 +149,12 @@ export const DashboardProvider = ({ children }) => {
                 const isHoje = dataItem >= hoje && dataItem < amanha;
                 const temDesvio = item.desvio === 1;
 
-                if (isHoje && temDesvio) {
-                    console.log('✅ Ocorrência hoje:', {
-                        data: item.dataHora,
-                        camera: item.camera,
-                        epis: item.episFaltando
-                    });
-                }
-
                 return isHoje && temDesvio;
             } catch (error) {
-                console.error('Erro ao processar data:', error);
                 return false;
             }
         }).length;
 
-        console.log(`📊 Total de ocorrências hoje: ${ocorrenciasHoje}`);
         return ocorrenciasHoje;
     };
 
@@ -187,19 +165,10 @@ export const DashboardProvider = ({ children }) => {
         // Total de registros com pessoas detectadas
         const registrosComPessoas = dados.filter(item => {
             const temPessoas = item.pessoasDetectadas > 0;
-            if (temPessoas) {
-                console.log('👤 Registro com pessoa:', {
-                    data: item.dataHora,
-                    camera: item.camera,
-                    pessoas: item.pessoasDetectadas,
-                    desvio: item.desvio
-                });
-            }
             return temPessoas;
         }).length;
 
         if (registrosComPessoas === 0) {
-            console.log('⚠️ Nenhum registro com pessoas detectadas');
             return 100;
         }
 
@@ -209,12 +178,6 @@ export const DashboardProvider = ({ children }) => {
         ).length;
 
         const taxa = Number(((registrosConformes / registrosComPessoas) * 100).toFixed(2));
-
-        console.log('📊 Cálculo da taxa de conformidade:', {
-            registrosComPessoas,
-            registrosConformes,
-            taxa: `${taxa}%`
-        });
 
         return taxa;
     };
@@ -269,8 +232,6 @@ export const DashboardProvider = ({ children }) => {
     const calcularOcorrenciasPorTipo = (dados) => {
         const tipos = ['capacete', 'oculos', 'luva', 'mascara', 'bota', 'abafador'];
 
-        console.log('📊 Calculando ocorrências por tipo...');
-
         const resultados = tipos.map(tipo => {
             const quantidade = dados.filter(item => {
                 if (item.desvio !== 1) return false;
@@ -296,8 +257,6 @@ export const DashboardProvider = ({ children }) => {
             `${String(i).padStart(2, '0')}:00`
         );
 
-        console.log('⏰ Calculando ocorrências por hora (24 períodos)...');
-
         const resultados = horas.map(hora => {
             const horaNum = parseInt(hora.split(':')[0]);
 
@@ -319,9 +278,6 @@ export const DashboardProvider = ({ children }) => {
                 Quantidade: quantidade
             };
         });
-
-        const horasComOcorrencias = resultados.filter(r => r.Quantidade > 0);
-        console.log('Horas com ocorrências:', horasComOcorrencias);
 
         return resultados;
     };
@@ -449,47 +405,9 @@ export const DashboardProvider = ({ children }) => {
                 }
             });
 
-            console.log('✅ Dados processados:', dadosProcessados.length, 'registros');
-
             // ============================================
-            // ANÁLISE DETALHADA DOS DADOS
+            // CALCULAR TODOS OS INDICADORES
             // ============================================
-            console.log('🔍 ANÁLISE DETALHADA DOS DADOS:');
-
-            // Estatísticas gerais
-            const totalComPessoas = dadosProcessados.filter(d => d.pessoasDetectadas > 0).length;
-            const totalComDesvio = dadosProcessados.filter(d => d.desvio === 1).length;
-            const totalSemDesvio = dadosProcessados.filter(d => d.desvio === 0).length;
-
-            console.log('📊 ESTATÍSTICAS GERAIS:');
-            console.log('- Total de registros:', dadosProcessados.length);
-            console.log('- Registros com pessoas:', totalComPessoas);
-            console.log('- Registros com desvio (ocorrências):', totalComDesvio);
-            console.log('- Registros sem desvio:', totalSemDesvio);
-
-            // Análise por data
-            const datas = {};
-            dadosProcessados.forEach(item => {
-                try {
-                    const dataStr = new Date(item.dataHora).toDateString();
-                    if (!datas[dataStr]) {
-                        datas[dataStr] = {
-                            total: 0,
-                            comDesvio: 0,
-                            comPessoas: 0,
-                            conformes: 0
-                        };
-                    }
-                    datas[dataStr].total++;
-                    if (item.desvio === 1) datas[dataStr].comDesvio++;
-                    if (item.pessoasDetectadas > 0) {
-                        datas[dataStr].comPessoas++;
-                        if (item.desvio === 0) datas[dataStr].conformes++;
-                    }
-                } catch (e) { }
-            });
-
-            console.log('📅 DISTRIBUIÇÃO POR DATA:', datas);
 
             // Verificar dados de hoje especificamente
             const hoje = new Date();
@@ -506,26 +424,11 @@ export const DashboardProvider = ({ children }) => {
                 }
             });
 
-            console.log('📊 DADOS DE HOJE:');
-            console.log('- Total registros hoje:', dadosHoje.length);
-            console.log('- Com desvio hoje:', dadosHoje.filter(d => d.desvio === 1).length);
-            console.log('- Com pessoas hoje:', dadosHoje.filter(d => d.pessoasDetectadas > 0).length);
-            console.log('- Amostra (até 3 registros):', dadosHoje.slice(0, 3).map(d => ({
-                data: d.dataHora,
-                pessoas: d.pessoasDetectadas,
-                desvio: d.desvio,
-                epis: d.episFaltando
-            })));
-
-            // ============================================
-            // CALCULAR TODOS OS INDICADORES
-            // ============================================
-
             // CORRIGIDO: Total de ocorrências hoje
             const totalOcorrenciasHoje = dadosHoje.filter(item => item.desvio === 1).length;
-            console.log('🎯 Total de ocorrências hoje:', totalOcorrenciasHoje);
 
             // CORRIGIDO: Taxa de conformidade
+            const totalComPessoas = dadosProcessados.filter(d => d.pessoasDetectadas > 0).length;
             let taxaConformidadeCalculada = 100;
             if (totalComPessoas > 0) {
                 const conformes = dadosProcessados.filter(item =>
@@ -533,7 +436,6 @@ export const DashboardProvider = ({ children }) => {
                 ).length;
                 taxaConformidadeCalculada = Number(((conformes / totalComPessoas) * 100).toFixed(2));
             }
-            console.log('🎯 Taxa de conformidade:', taxaConformidadeCalculada + '%');
 
             // Câmera crítica
             const cameraCriticaCalculada = calcularCameraCritica(dadosProcessados);
@@ -600,23 +502,13 @@ export const DashboardProvider = ({ children }) => {
             setHistoricoCompleto(historico);
             setAnaliseEstatistica(analise);
 
-            // Log final
-            console.log('✅ DASHBOARD ATUALIZADO:');
-            console.log('- Total hoje:', totalOcorrenciasHoje);
-            console.log('- Taxa conformidade:', taxaConformidadeCalculada + '%');
-            console.log('- Câmera crítica:', cameraCriticaCalculada);
-            console.log('- Falsos positivos:', falsosCalculados);
-            console.log('- Intervalo crítico:', intervaloMais);
-
             setLoading(false);
 
         } catch (err) {
-            console.error('❌ Erro ao carregar dados:', err);
             setError(err.message);
             setLoading(false);
 
             // Dados de fallback
-            console.log('⚠️ Usando dados de fallback');
             setTotalHoje(15);
             setTaxaConformidade(87.5);
             setCameraCritica('CAM01');

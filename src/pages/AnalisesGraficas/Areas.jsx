@@ -25,8 +25,9 @@ import {
     Rectangle,
     PieChart,
     Pie,
-    Legend
-
+    Legend,
+    Treemap,
+    ComposedChart,
 } from "recharts";
 
 export default function Areas() {
@@ -78,6 +79,35 @@ export default function Areas() {
         lineHeight: "24px"
     };
 
+    const dadosTreemapAreas = dadosConformidadeArea.map((item) => ({
+        name: item.area,
+        size: 100 - item.conformidade, // Invertendo o valor
+        fill:
+            item.conformidade < 70
+                ? "red"
+                : item.conformidade < 85
+                    ? "orange"
+                    : "green",
+        originalValue: item.conformidade // Guardando o valor original para o tooltip
+    }));
+
+    const dadosEpiPorArea = [
+        { area: "Lavra a céu aberto", epiMelhor: 96, epiPior: 72 },
+        { area: "Britagem primária", epiMelhor: 94, epiPior: 65 },
+        { area: "Moagem", epiMelhor: 91, epiPior: 68 },
+        { area: "Flotação", epiMelhor: 89, epiPior: 60 },
+        { area: "Espessamento", epiMelhor: 95, epiPior: 74 },
+        { area: "Filtragem", epiMelhor: 92, epiPior: 66 },
+        { area: "Pelotização", epiMelhor: 97, epiPior: 80 },
+        { area: "Pátio de estocagem", epiMelhor: 90, epiPior: 62 },
+        { area: "Expedição ferroviária", epiMelhor: 93, epiPior: 70 }
+    ].map(d => ({
+        ...d,
+        gap: d.epiMelhor - d.epiPior
+    }));
+
+
+
     return (
         <>
             <main className="conformidadeMain">
@@ -119,10 +149,11 @@ export default function Areas() {
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-
                 </div>
                 <div className='distribuicaoBloco radaArea'>
-                    <p><b>Para as três áreas críticas</b></p>
+                    {/* <p><b>Para as três áreas críticas</b></p>
+                    <hr /> */}
+                    <h1>As três priores áreas</h1>
                     <hr />
                     <ResponsiveContainer width="100%" height="100%">
                         <RadialBarChart
@@ -166,6 +197,64 @@ export default function Areas() {
                     <h1
                         style={{ color: 'red' }}
                     >{dadosAreaOrdenados.slice(-1)[0].area}</h1>
+                </div>
+                <div className='distribuicaoBloco graficoEpisPorArea'>
+                    <div className='auxiliarComparaçãoEPI'>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart data={dadosEpiPorArea}>
+
+                                <CartesianGrid strokeDasharray="3 3" />
+
+                                <XAxis dataKey="area" />
+
+                                <YAxis domain={[0, 100]} />
+
+                                <Tooltip formatter={(v) => `${v}%`} />
+
+                                <Legend />
+
+                                <Bar
+                                    dataKey="epiMelhor"
+                                    name="EPI mais utilizado"
+                                    fill="var(--azulDestaque)"
+                                    radius={[4, 4, 0, 0]}
+                                />
+
+                                <Bar
+                                    dataKey="epiPior"
+                                    name="EPI menos utilizado"
+                                    fill="red"
+                                    radius={[4, 4, 0, 0]}
+                                />
+
+                                {/* <Line
+                                type="monotone"
+                                dataKey="gap"
+                                name="Diferença"
+                                stroke="gold"
+                                strokeWidth={3}
+                                dot={{ r: 4 }}
+                            /> */}
+
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+                <div className='distribuicaoBloco graficoDeAreaPorArea'>
+                    <p><b>Áreas e suas taxas de conformidade</b></p>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <Treemap
+                            data={dadosTreemapAreas}
+                            dataKey="size"
+                            aspectRatio={4 / 3}
+                            stroke="#fff"
+                            strokeWidth={0.5}
+                            fill='white'
+
+                        >
+                            <Tooltip />
+                        </Treemap>
+                    </ResponsiveContainer>
                 </div>
             </main>
         </>
