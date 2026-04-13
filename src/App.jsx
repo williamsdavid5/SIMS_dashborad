@@ -14,6 +14,8 @@ import Conformidade from "./pages/AnalisesGraficas/Conformidade";
 import EPIs from "./pages/AnalisesGraficas/EPIs";
 import Areas from "./pages/AnalisesGraficas/Areas";
 
+import CloudCamTest from "./components/CloudCamTest";
+
 import './App.css'
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
         <Route path="epis" element={<EPIs />} />
         <Route path="areas" element={<Areas />} />
       </Route>
+      <Route path="/cloudcam" element={<CloudCamTest />} />
     </Routes>
   );
 }
