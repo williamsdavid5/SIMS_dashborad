@@ -33,11 +33,18 @@
 .blocoCamera {
     background-color: var(--corJanela);
     border-radius: 10px;
-    padding: 20PX;
+    gap: 5px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     min-width: auto;
     min-height: auto;
+    cursor: pointer;
+    transition: transform ease-in-out 0.1s;
+}
+
+.blocoCamera:hover {
+    transform: scale(1.02);
 }
 
 .blocoCamera .esquerda {
@@ -58,6 +65,28 @@
     justify-content: center;
     min-width: auto;
     min-height: auto;
+}
+
+.thumbCamera {
+    flex: 1;
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbCamera img {
+    height: 100%;
+    width: 100%;
+    /* object-fit: contain; */
+}
+
+.online {
+    color: green;
+    font-weight: bold;
 }
 
 @media (max-width: 900px) {

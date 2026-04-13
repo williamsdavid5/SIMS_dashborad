@@ -1,102 +1,103 @@
 import MenuLateral from "./MenuLateral"
-import { useEffect } from 'react'
 import './styles/monitoramento.css'
 
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, LabelList } from "recharts";
-
-function BlocoCamera({ data }) {
-
-    const confianca = data.confianca;
-
-    const chartData = [
-        { name: "valor", value: confianca },
-        { name: "resto", value: 100 - confianca }
-    ];
-
-    const corValor =
-        confianca < 40 ? "red" :
-            confianca < 70 ? "gold" :
-                "green";
-    const corRestante = "var(--bordaCor)";
-
-    return (
-        <div className="blocoCamera">
-            <div className="esquerda">
-                <h1>{data.camera}</h1>
-                <p><b>{data.area}</b></p>
-                <hr />
-            </div>
-
-            <div className="direita">
-                <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-
-                        <Pie
-                            data={chartData}
-                            dataKey="value"
-                            startAngle={180}
-                            endAngle={0}
-                            cx="50%"
-                            cy="100%"
-                            innerRadius={0}
-                            outerRadius={90}
-                            stroke="none"
-                        >
-                            <Cell fill={corValor} />
-                            <Cell fill={corRestante} />
-                        </Pie>
-                    </PieChart>
-                </ResponsiveContainer>
-                <text
-                    x="50%"
-                    y="90%"
-                    textAnchor="middle"
-                    fontSize="18"
-                    fontWeight="bold"
-                >
-                    {confianca}% de confiança
-                </text>
-            </div>
-        </div>
-    )
-}
+import React, { useState, useEffect } from 'react';
+import cloudcamApi from '../services/cloudcamApi';
+import CloudCamPlayerModal from "./CloudCamPlayerModal";
 
 export default function Monitoramento() {
 
-    const data = [
-        { camera: 'CAM-01', area: 'Frente de Lavra - Norte', confianca: 88 },
-        { camera: 'CAM-02', area: 'Britagem Primária', confianca: 80 },
-        { camera: 'CAM-03', area: 'Correia Transportadora 04', confianca: 45 },
-        { camera: 'CAM-04', area: 'Pátio de Estocagem', confianca: 78 },
-        { camera: 'CAM-05', area: 'Oficina de Máquinas Pesadas', confianca: 95 },
-        { camera: 'CAM-06', area: 'Barragem de Rejeitos - Talude A', confianca: 69 },
-        { camera: 'CAM-07', area: 'Moagem de Minério', confianca: 62 },
-        { camera: 'CAM-08', area: 'Peneiramento Vibratório', confianca: 34 },
-        { camera: 'CAM-09', area: 'Acesso Principal - Portaria', confianca: 100 },
-        { camera: 'CAM-10', area: 'Flotação de Cobre', confianca: 81 },
-        { camera: 'CAM-11', area: 'Espessador de Concentrado', confianca: 56 },
-        { camera: 'CAM-12', area: 'Laboratório Químico', confianca: 94 },
-        { camera: 'CAM-13', area: 'Estação de Tratamento de Água', confianca: 87 },
-        { camera: 'CAM-14', area: 'Depósito de Explosivos', confianca: 98 },
-        { camera: 'CAM-15', area: 'Pilha Pulmão', confianca: 41 },
-        { camera: 'CAM-16', area: 'Carregamento de Vagões', confianca: 89 },
-        { camera: 'CAM-17', area: 'Refeitório Central', confianca: 91 },
-        { camera: 'CAM-18', area: 'Área de Descarte de Estéril', confianca: 29 },
-        { camera: 'CAM-19', area: 'Subestação Elétrica', confianca: 97 },
-        { camera: 'CAM-20', area: 'Almoxarifado Geral', confianca: 83 },
-        { camera: 'CAM-21', area: 'Dique de Contenção 02', confianca: 93 },
-        { camera: 'CAM-22', area: 'Pátio de Combustíveis', confianca: 96 },
-        { camera: 'CAM-23', area: 'Silo de Armazenamento', confianca: 54 },
-        { camera: 'CAM-24', area: 'Área de Preservação Ambiental', confianca: 75 },
-        // { camera: 'CAM-25', area: 'Centro de Controle Operacional', confianca: 99 }
-    ];
+    const [cameras, setCameras] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [modalPlayer, setModalPlayer] = useState(false);
+    const [selectedCamera, setSelectedCamera] = useState(null);
+    const [streamInfo, setStreamInfo] = useState(null);
+    const [loadingStream, setLoadingStream] = useState(false);
 
-    const getCorValor = (confianca) =>
-        confianca < 40 ? "red" :
-            confianca < 70 ? "gold" :
-                "green";
+    // Login automático e carregamento das câmeras
+    useEffect(() => {
+        const init = async () => {
+            try {
+                setLoading(true);
+                // Login automático
+                await cloudcamApi.login();
+                // Carrega câmeras
+                const camerasList = await cloudcamApi.getCameras();
+                setCameras(camerasList);
+                setError(null);
+            } catch (err) {
+                setError('Erro ao conectar com o servidor. Verifique se o backend está rodando.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const corRestante = "var(--corJanela)";
+        init();
+    }, []);
+
+    const handleCameraClick = async (camera) => {
+        try {
+            setLoadingStream(true);
+
+            // Busca informações do stream
+            const stream = await cloudcamApi.getStreamInfo(camera.id);
+            setStreamInfo(stream);
+            setSelectedCamera(camera);
+            setModalPlayer(true);
+        } catch (err) {
+            console.error('Erro ao abrir stream:', err);
+            alert('Não foi possível abrir o stream desta câmera');
+        } finally {
+            setLoadingStream(false);
+        }
+    };
+
+    const handleClosePlayer = () => {
+        setModalPlayer(false);
+        setSelectedCamera(null);
+        setStreamInfo(null);
+    };
+
+    if (loading) {
+        return (
+            <main className="dashboardMain">
+                <MenuLateral />
+                <section className="principalDash">
+                    <header className='superiorDash'>
+                        <h2>Monitoramento ao vivo</h2>
+                        <p>Carregando câmeras...</p>
+                    </header>
+                    <div className="camerasBlocos">
+                        <div className="loading">Aguarde, carregando...</div>
+                    </div>
+                </section>
+            </main>
+        );
+    }
+
+    if (error) {
+        return (
+            <main className="dashboardMain">
+                <MenuLateral />
+                <section className="principalDash">
+                    <header className='superiorDash'>
+                        <h2>Monitoramento ao vivo</h2>
+                        <p>Erro na conexão</p>
+                    </header>
+                    <div className="camerasBlocos">
+                        <div className="error">
+                            {error}
+                            <button onClick={() => window.location.reload()} className="retryBtn">
+                                Tentar novamente
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        );
+    }
 
     return (
         <main className="dashboardMain">
@@ -109,58 +110,52 @@ export default function Monitoramento() {
                 </header>
 
                 <div className="camerasBlocos">
-                    <div className="blocoGraficoGeralCamreas">
-                        <div className="divAuxGraficoCameras">
-                            <ResponsiveContainer width="100%" height="90%" className={'containerGraficoBarra'}>
-                                <BarChart
-                                    data={data}
-                                    margin={{ top: 40, right: 20, left: 20, bottom: 10 }}
-                                >
-                                    <XAxis
-                                        dataKey="camera"
-                                        type="category"
-                                        angle={-90}
-                                        textAnchor="end"
-                                        interval={0}
-                                        height={70}
+                    {cameras.map((camera) => (
+                        <div
+                            className="blocoCamera"
+                            key={camera.id}
+                            onClick={() => handleCameraClick(camera)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <div className="thumbCamera">
+                                {camera.has_thumb ? (
+                                    <img
+                                        src={`http://localhost:8000/api/thumbnail/${camera.id}`}
+                                        alt={camera.nome}
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.parentElement.innerHTML = '<p>Sem prévia</p>';
+                                        }}
                                     />
+                                ) : (
+                                    <p>Sem prévia</p>
+                                )}
+                            </div>
+                            <div className="infoCamera">
+                                <p className="nomeCamera">{camera.nome}</p>
+                                <p className={`statusCamera ${camera.status}`}>
+                                    {camera.status === 'online' ? 'Online' : 'Offline'}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-                                    <LabelList
-                                        dataKey="confianca"
-                                        position="insideTop"
-                                        formatter={(v) => `${v}%`}
-                                    />
-
-                                    <Bar
-                                        dataKey="confianca"
-                                        background={{ fill: corRestante }}
-                                        radius={[4, 4, 0, 0]}
-                                    >
-
-                                        {data.map((entry, index) => (
-                                            <Cell
-                                                key={`cell-${index}`}
-                                                fill={getCorValor(entry.confianca)}
-                                            />
-                                        ))}
-
-                                        <LabelList
-                                            dataKey="confianca"
-                                            position="top"
-                                            formatter={(v) => `${v}%`}
-                                        />
-
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
+                {loadingStream && (
+                    <div className="loadingOverlay">
+                        <div className="loadingContent">
+                            <p>Carregando stream...</p>
                         </div>
                     </div>
-                    {data.map((camera) => {
-                        return (
-                            <BlocoCamera data={camera} />
-                        )
-                    })}
-                </div>
+                )}
+
+                {modalPlayer && selectedCamera && streamInfo && (
+                    <CloudCamPlayerModal
+                        setModalPlayer={handleClosePlayer}
+                        camera={selectedCamera}
+                        streamUrl={streamInfo.stream_url}
+                    />
+                )}
 
             </section>
         </main>

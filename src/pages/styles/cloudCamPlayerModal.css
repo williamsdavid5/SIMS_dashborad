@@ -1,0 +1,72 @@
+.janelaModalPlayer {
+    position: absolute;
+    /* transform: translate(-50%, -50%); */
+    background-color: var(--corJanela);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 1200px;
+    height: 80dvh;
+    display: flex;
+    flex-direction: column;
+    /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); */
+    z-index: 1000;
+}
+
+.topoModalPlayer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--corJanela);
+    border-radius: 10px 10px 0 0;
+    flex-wrap: wrap;
+}
+
+.topoModalPlayer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.topoModalPlayer p:first-child {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.botaoFecharModal {
+    background-color: red;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    border: solid 2px red;
+}
+
+.botaoFecharModal:hover {
+    background-color: white;
+    color: black;
+    border: solid 2px black;
+}
+
+.auxVideo {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    border-radius: 0 0 10px 10px;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.playerVideo {
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+@media (max-width: 1000px) {
+    .playerVideo {
+        height: auto;
+        width: 100%;
+    }
+}
