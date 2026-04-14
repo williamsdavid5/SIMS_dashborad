@@ -4,6 +4,7 @@ import './styles/monitoramento.css'
 import React, { useState, useEffect } from 'react';
 import cloudcamApi from '../services/cloudcamApi';
 import CloudCamPlayerModal from "./CloudCamPlayerModal";
+import LoadingGif from '../assets/loading.gif'
 
 export default function Monitoramento() {
 
@@ -66,11 +67,15 @@ export default function Monitoramento() {
                 <MenuLateral />
                 <section className="principalDash">
                     <header className='superiorDash'>
-                        <h2>Monitoramento ao vivo</h2>
-                        <p>Carregando câmeras...</p>
+                        <span className="auxCarregando">
+                            <img src={LoadingGif} alt="" />
+                            <span>
+                                <h2>Monitoramento ao vivo</h2>
+                                <p>Carregando câmeras...</p>
+                            </span>
+                        </span>
                     </header>
                     <div className="camerasBlocos">
-                        <div className="loading">Aguarde, carregando...</div>
                     </div>
                 </section>
             </main>
@@ -106,7 +111,7 @@ export default function Monitoramento() {
 
                 <header className='superiorDash'>
                     <h2>Monitoramento ao vivo</h2>
-                    <p>Feedback visual sobre o monitoramento, observe dados relevantes.</p>
+                    <p>Acesse todas as câmeras cadastradas no sistema</p>
                 </header>
 
                 <div className="camerasBlocos">
@@ -154,6 +159,7 @@ export default function Monitoramento() {
                         setModalPlayer={handleClosePlayer}
                         camera={selectedCamera}
                         streamUrl={streamInfo.stream_url}
+                        enableDetection={true}
                     />
                 )}
 

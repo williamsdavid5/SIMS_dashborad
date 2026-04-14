@@ -1,47 +1,53 @@
+// CloudCamPlayerModal.jsx - Versão simplificada
 import './styles/cloudCamPlayerModal.css';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
 
-export default function CloudCamPlayerModal({ setModalPlayer, camera, streamUrl }) {
+export default function CloudCamPlayerModal({ setModalPlayer, camera, streamUrl, enableDetection = false }) {
+    const [telaInteira, setTelaInteira] = useState(false);
+
     const videoRef = useRef(null);
     const hlsRef = useRef(null);
+    const imgRef = useRef(null);  // Para MJPEG
+
+    // Constrói a URL correta baseada no modo
+    const getStreamUrl = () => {
+        if (enableDetection) {
+            // Usa o endpoint com detecção (MJPEG)
+            return `http://localhost:8000/api/stream-detected/${camera.id}`;
+        }
+        // Usa o stream original (HLS)
+        return streamUrl;
+    };
 
     useEffect(() => {
+        if (enableDetection) return;  // Não usa HLS quando detecção está ativa
+
         const video = videoRef.current;
+        const finalStreamUrl = getStreamUrl();
 
-        if (!video || !streamUrl) return;
+        if (!video || !finalStreamUrl) return;
 
-        // Limpa player anterior
         if (hlsRef.current) {
             hlsRef.current.destroy();
         }
 
-        // Verifica se é HLS (.m3u8)
-        if (streamUrl.includes('.m3u8')) {
-            if (Hls.isSupported()) {
-                const hls = new Hls({
-                    debug: false,
-                    enableWorker: true,
-                    lowLatencyMode: true,
-                });
+        if (finalStreamUrl.includes('.m3u8') && Hls.isSupported()) {
+            const hls = new Hls({
+                debug: false,
+                enableWorker: true,
+                lowLatencyMode: true,
+            });
 
-                hls.loadSource(streamUrl);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play().catch(e => console.log('Autoplay prevented:', e));
-                });
+            hls.loadSource(finalStreamUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.play().catch(e => console.log('Autoplay prevented:', e));
+            });
 
-                hlsRef.current = hls;
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Safari nativo
-                video.src = streamUrl;
-                video.addEventListener('loadedmetadata', () => {
-                    video.play().catch(e => console.log('Autoplay prevented:', e));
-                });
-            }
+            hlsRef.current = hls;
         } else {
-            // Stream direto
-            video.src = streamUrl;
+            video.src = finalStreamUrl;
         }
 
         return () => {
@@ -53,26 +59,58 @@ export default function CloudCamPlayerModal({ setModalPlayer, camera, streamUrl 
                 hlsRef.current.destroy();
             }
         };
-    }, [streamUrl]);
+    }, [streamUrl, camera.id, enableDetection]);
+
+    useEffect(() => {
+        if (!enableDetection) return;
+
+        const img = imgRef.current;
+        const finalStreamUrl = getStreamUrl();
+
+        if (!img || !finalStreamUrl) return;
+
+        console.log('🖼️ Iniciando stream MJPEG com detecção:', finalStreamUrl);
+
+        // Adiciona timestamp para evitar cache
+        img.src = finalStreamUrl;
+
+        return () => {
+            if (img) {
+                img.src = '';
+            }
+        };
+    }, [enableDetection, camera.id]);
 
     return (
         <div className='modalBackground'>
-            <main className='janelaModalPlayer'>
+            <main className={`janelaModalPlayer ${telaInteira && 'telaInteira'}`}>
                 <div className='topoModalPlayer'>
                     <p><b>{camera.nome}</b></p>
                     <p>Status: {camera.status === 'online' ? 'Online' : 'Offline'}</p>
+                    {enableDetection && <p style={{ color: '#4CAF50' }}>Detecção ATIVA</p>}
+                    <button className={`botaoTelaInteira`} onClick={() => { setTelaInteira(!telaInteira) }}>
+                        Tela inteira
+                    </button>
                     <button onClick={() => setModalPlayer(false)} className='botaoFecharModal'>
                         Fechar
                     </button>
                 </div>
                 <div className='auxVideo'>
-                    <video
-                        ref={videoRef}
-                        controls
-                        autoPlay
-                        playsInline
-                        className='playerVideo'
-                    />
+                    {enableDetection ? (
+                        <img
+                            ref={imgRef}
+                            className='playerVideo'
+                            alt={`Camera ${camera.nome} com detecção`}
+                        />
+                    ) : (
+                        <video
+                            ref={videoRef}
+                            controls
+                            autoPlay
+                            playsInline
+                            className='playerVideo'
+                        />
+                    )}
                 </div>
             </main>
         </div>

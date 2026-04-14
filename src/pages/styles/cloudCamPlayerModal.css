@@ -3,6 +3,7 @@
     /* transform: translate(-50%, -50%); */
     background-color: var(--corJanela);
     border-radius: 12px;
+    overflow: hidden;
     width: 90%;
     max-width: 1200px;
     height: 80dvh;
@@ -12,13 +13,20 @@
     z-index: 1000;
 }
 
+.telaInteira {
+    height: 100dvh;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+}
+
 .topoModalPlayer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
     background-color: var(--corJanela);
-    border-radius: 10px 10px 0 0;
+    /* border-radius: 10px 10px 0 0; */
     flex-wrap: wrap;
 }
 
@@ -46,13 +54,17 @@
     border: solid 2px black;
 }
 
+.botaoTelaInteira {
+    border-radius: 5px;
+}
+
 .auxVideo {
     padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #000;
-    border-radius: 0 0 10px 10px;
+    /* border-radius: 0 0 10px 10px; */
     flex: 1;
     min-width: 0;
     min-height: 0;

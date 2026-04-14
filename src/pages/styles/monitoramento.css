@@ -89,6 +89,16 @@
     font-weight: bold;
 }
 
+.auxCarregando {
+    display: flex;
+    gap: 20px;
+}
+
+.auxCarregando img {
+    object-fit: contain;
+    width: 55px;
+}
+
 @media (max-width: 900px) {
 
     .blocoGraficoGeralCamreas {
