@@ -68,12 +68,25 @@
     flex: 1;
     min-width: 0;
     min-height: 0;
+    color: white;
 }
 
 .playerVideo {
     height: 100%;
     object-fit: contain;
     border-radius: 8px;
+}
+
+.loadingSpinnerPlayer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.loadingSpinnerPlayer img {
+    object-fit: contain;
+    width: 50px;
 }
 
 @media (max-width: 1000px) {

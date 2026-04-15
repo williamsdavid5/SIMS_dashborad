@@ -6,6 +6,35 @@ import cloudcamApi from '../services/cloudcamApi';
 import CloudCamPlayerModal from "./CloudCamPlayerModal";
 import LoadingGif from '../assets/loading.gif'
 
+function ReporteEmail({ setJanelaEmail }) {
+    return (
+        <>
+            <div className="modalBackground">
+                <div className="janelaReporteEmail">
+                    <h1>Configurações de reporte</h1>
+                    <hr />
+                    <div className="divInputs">
+                        <p>Remetente</p>
+                        <input type="email" />
+                        <p>Senha</p>
+                        <input type="password" name="" id="" />
+                        <p>Destinatários</p>
+                        <textarea name="" id="" placeholder="Separe por ';'"></textarea>
+                        <p>SMTP Server</p>
+                        <input type="text" name="" id="" />
+                        <p>SMTP Port</p>
+                        <input type="text" name="" id="" />
+                        <button>Salvar</button>
+                        <button
+                            onClick={() => setJanelaEmail(false)}
+                        >Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
+
 export default function Monitoramento() {
 
     const [cameras, setCameras] = useState([]);
@@ -15,6 +44,8 @@ export default function Monitoramento() {
     const [selectedCamera, setSelectedCamera] = useState(null);
     const [streamInfo, setStreamInfo] = useState(null);
     const [loadingStream, setLoadingStream] = useState(false);
+
+    const [janelaEmail, setJanelaEmail] = useState(false);
 
     // Login automático e carregamento das câmeras
     useEffect(() => {
@@ -110,8 +141,17 @@ export default function Monitoramento() {
             <section className="principalDash">
 
                 <header className='superiorDash'>
-                    <h2>Monitoramento ao vivo</h2>
-                    <p>Acesse todas as câmeras cadastradas no sistema</p>
+                    <span className="auxSUperiorMonitoramento">
+                        <div>
+                            <h2>Monitoramento ao vivo</h2>
+                            <p>Acesse todas as câmeras cadastradas no sistema</p>
+                        </div>
+                        <button
+                            onClick={() => { setJanelaEmail(true) }}
+                        >
+                            Reporte por e-mail
+                        </button>
+                    </span>
                 </header>
 
                 <div className="camerasBlocos">
@@ -138,9 +178,9 @@ export default function Monitoramento() {
                             </div>
                             <div className="infoCamera">
                                 <p className="nomeCamera">{camera.nome}</p>
-                                <p className={`statusCamera ${camera.status}`}>
+                                {/* <p className={`statusCamera ${camera.status}`}>
                                     {camera.status === 'online' ? 'Online' : 'Offline'}
-                                </p>
+                                </p> */}
                             </div>
                         </div>
                     ))}
@@ -159,11 +199,16 @@ export default function Monitoramento() {
                         setModalPlayer={handleClosePlayer}
                         camera={selectedCamera}
                         streamUrl={streamInfo.stream_url}
-                        enableDetection={true}
                     />
                 )}
 
             </section>
+
+            {janelaEmail && <>
+                <ReporteEmail
+                    setJanelaEmail={setJanelaEmail}
+                ></ReporteEmail>
+            </>}
         </main>
     )
 }
