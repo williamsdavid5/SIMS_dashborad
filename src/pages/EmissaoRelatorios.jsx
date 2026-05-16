@@ -1,6 +1,7 @@
 import MenuLateral from "./MenuLateral"
 import { useState } from 'react';
 import './styles/relatorios.css'
+import ExportarRelatorioPDF from "../components/ExportarRelatorioPDF";
 
 export default function EmissaoRelatorios() {
 
@@ -331,9 +332,10 @@ export default function EmissaoRelatorios() {
                                 Incluir recomendações
                             </label>
                         </span>
-                        <button>
+                        {/* <button onClick={() => gerarPDF()}>
                             Gerar
-                        </button>
+                        </button> */}
+                        <ExportarRelatorioPDF />
                     </div>
                     <div className="janelaHistoricoRelatorio">
                         <h2>Última emissões</h2>

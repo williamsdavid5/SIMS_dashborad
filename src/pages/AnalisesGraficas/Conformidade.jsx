@@ -166,7 +166,7 @@ export default function Conformidade() {
 
                             <RadialBar
                                 dataKey="value"
-                                fill="var(--azulDetaque)"
+                                fill="var(--azulDestaque)"
                                 cornerRadius={5}
                                 background={{ fill: "var(--bordaCor)" }}
                             /> </RadialBarChart>
