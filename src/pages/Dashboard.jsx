@@ -1,7 +1,8 @@
 import './styles/dashboard.css'
 import MenuLateral from './MenuLateral'
 import ModalImg from './ModalImg';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useApp } from '../context/AppContext';
 
 import {
     BarChart,
@@ -377,6 +378,16 @@ export default function Dashboard() {
     const [modalImagem, setModalImagem] = useState(false);
     const [dadosOcorrencia, setDadosOcorrencia] = useState([]);
 
+    const { ocorrencias, loadingOcorrencias, errorOcorrencias, fetchOcorrencias } = useApp();
+
+    useEffect(() => {
+        fetchOcorrencias();
+    }, [fetchOcorrencias]);
+
+    // useEffect(() => {
+    //     console.log(ocorrencias);
+    // }, ocorrencias);
+
     return (
         <>
             <main className="dashboardMain">
@@ -473,49 +484,6 @@ export default function Dashboard() {
                                 </ResponsiveContainer>
                             </div>
                         </div>
-                        {/* <div className='bloco falsosPositivos'>
-                            <p className='tituloBloco'>Horário com mais ocorrências</p>
-                            <h1>{falsosPositivos}</h1>
-                        </div> */}
-                        <div className='bloco ultimasOcorrencias'>
-                            <p className='tituloBloco'>Últimas ocorrências</p>
-                            <table border={1} className='tabelaUltimasOcorrencias'>
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>Câmera</th>
-                                        <th>Item envolvido</th>
-                                        <th>Imagem</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {ultimasOcorrencias.map((ocorrencia) => (
-                                        <tr key={ocorrencia.id}>
-                                            <td>{formatarData(ocorrencia.data)}</td>
-                                            <td>{ocorrencia.camera}</td>
-                                            <td>{ocorrencia.item}</td>
-                                            <td>
-                                                {/* <a href={ocorrencia.imagemUrl} target="_blank" rel="noopener noreferrer">
-                                                    Ver
-                                                </a> */}
-                                                <button
-                                                    className='botaoVerImagem'
-                                                    onClick={() => {
-                                                        setModalImagem(true)
-                                                        setDadosOcorrencia({
-                                                            data: ocorrencia.data,
-                                                            camera: ocorrencia.camera,
-                                                            item: ocorrencia.item
-                                                        })
-                                                    }}
-                                                >Ver</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
                         <div className='bloco historicoCompleto'>
                             <p className='tituloBloco'>Histórico completo</p>
                             <table border={1} className='tabelaUltimasOcorrencias'>
@@ -523,37 +491,33 @@ export default function Dashboard() {
                                     <tr>
                                         <th>Data</th>
                                         <th>Câmera</th>
-                                        <th>Item envolvido</th>
-                                        <th>Imagem</th>
-                                        <th>Confiança</th>
+                                        <th>EPI</th>
+                                        {/* <th>Imagem</th> */}
+                                        <th>Tipo</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    {historicoCompleto.map((ocorrencia) => (
-
+                                    {ocorrencias.map((ocorrencia) => (
                                         <tr key={ocorrencia.id}>
-                                            <td>{formatarData(ocorrencia.data)}</td>
+                                            <td>{formatarData(ocorrencia.data_hora)}</td>
                                             <td>{ocorrencia.camera}</td>
-                                            <td>{ocorrencia.item}</td>
-                                            <td>
-                                                {/* <a href={ocorrencia.imagemUrl} target="_blank" rel="noopener noreferrer">
-                                                    Ver
-                                                </a> */}
+                                            <td>{ocorrencia.epi}</td>
+                                            {/* <td>
                                                 <button
                                                     className='botaoVerImagem'
                                                     onClick={() => {
                                                         setModalImagem(true)
                                                         setDadosOcorrencia({
-                                                            data: ocorrencia.data,
+                                                            data: ocorrencia.data_hora,
                                                             camera: ocorrencia.camera,
-                                                            item: ocorrencia.item
+                                                            item: ocorrencia.epi
                                                         })
                                                     }}
                                                 >Ver</button>
-                                            </td>
-                                            <td>{ocorrencia.confianca}</td>
+                                            </td> */}
+                                            <td>{ocorrencia.tipo}</td>
                                             <td>
                                                 <p className={ocorrencia.status == 'Em análise' ? 'analise' : ocorrencia.status == 'Não confirmado' ? 'naoConfirmado' : ocorrencia.status == 'Confirmado' ? 'confirmado' : ''}>
                                                     {ocorrencia.status}

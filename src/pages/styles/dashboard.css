@@ -91,7 +91,7 @@
 
 .analiseEstatistica {
     grid-column: span 2;
-    grid-row: span 2;
+    grid-row: span 3;
 }
 
 .inforEstatistica {
@@ -102,12 +102,12 @@
 }
 
 .falsosPositivos {
-    grid-row: span 2;
+    grid-row: span 3;
 }
 
 .ocorrenciasPorTipo {
     grid-column: span 2;
-    grid-row: span 4;
+    grid-row: span 3;
 }
 
 .ultimasOcorrencias {
