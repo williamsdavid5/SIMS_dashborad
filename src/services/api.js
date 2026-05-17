@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    // O Vite usa import.meta.env em vez de process.env
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+    baseURL: import.meta.env.VITE_API_URL || 'https://api-epi-metrics.onrender.com/api',
     timeout: 10000,
 });
 
