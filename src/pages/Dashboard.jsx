@@ -22,10 +22,14 @@ import {
 
 export default function Dashboard() {
     const [totalHoje, setTotalHoje] = useState(27);
+    const [epiCritico, setEpiCritico] = useState('');
     const [taxaConformidade, setTaxaConformidade] = useState(91.23);
-    const [cameraCritica, setCameraCritica] = useState("CAM03");
+    const [cameraCritica, setCameraCritica] = useState("");
     const [falsosPositivos, setFalsosPositivos] = useState(4);
-    const [intervaloMaisOcorrencias, setIntervaloMaisOcorrencias] = useState('10:00');
+    const [intervaloMaisOcorrencias, setIntervaloMaisOcorrencias] = useState({
+        horario: '00:00',
+        quantidade: 3
+    });
 
     function formatarData(dataHora) {
         if (!dataHora) return "";
@@ -39,8 +43,6 @@ export default function Dashboard() {
             minute: "2-digit",
         });
     }
-
-
 
     const COLORS = ["#0A1E43", "#243757", "#4b6185", "#879dc0"];
 
@@ -81,9 +83,51 @@ export default function Dashboard() {
         Quantidade: Number(item.total)
     })) || [];
 
-    // useEffect(() => {
-    //     console.log("grafico tipos: ", dadosGraficoTipoOcorrencia);
-    // }, dadosGraficoTipoOcorrencia);
+    useEffect(() => {
+
+        if (!dadosGraficoTipoOcorrencia || dadosGraficoTipoOcorrencia.length === 0) {
+            return;
+        }
+
+        const maiorTotal = Math.max(...dadosGraficoTipoOcorrencia.map(item => item.total));
+
+        const episComMaiorTotal = dadosGraficoTipoOcorrencia.filter(item => item.total === maiorTotal);
+
+        if (episComMaiorTotal.length === 1) {
+            setEpiCritico(episComMaiorTotal[0].epi);
+        } else {
+            const indiceAleatorio = Math.floor(Math.random() * episComMaiorTotal.length);
+            setEpiCritico(episComMaiorTotal[indiceAleatorio].epi);
+        }
+
+        // Lógica para horário com mais ocorrências
+        if (dadosGraficoLinha && dadosGraficoLinha.quantidades && dadosGraficoLinha.quantidades.length > 0) {
+            const maiorQuantidade = Math.max(...dadosGraficoLinha.quantidades);
+            const indiceMaior = dadosGraficoLinha.quantidades.indexOf(maiorQuantidade);
+            const horarioMaior = dadosGraficoLinha.horas[indiceMaior];
+
+            setIntervaloMaisOcorrencias({
+                horario: horarioMaior,
+                quantidade: maiorQuantidade
+            });
+        }
+
+        const listaCameras = dadosGraficoCameras?.dadosCompletos;
+
+        if (listaCameras && listaCameras.length > 0) {
+            const maiorTotalCamera = Math.max(...listaCameras.map(item => item.total));
+
+            const camerasComMaiorTotal = listaCameras.filter(item => item.total === maiorTotalCamera);
+
+            if (camerasComMaiorTotal.length === 1) {
+                setCameraCritica(camerasComMaiorTotal[0].camera);
+            } else {
+                const indiceAleatorio = Math.floor(Math.random() * camerasComMaiorTotal.length);
+                setCameraCritica(camerasComMaiorTotal[indiceAleatorio].camera);
+            }
+        }
+
+    }, [dadosGraficoTipoOcorrencia, dadosGraficoLinha, dadosGraficoCameras]);
 
     return (
         <>
@@ -105,7 +149,24 @@ export default function Dashboard() {
                         </div>
                         <div className='bloco infoNumerica cameraCritica'>
                             <p className='tituloBloco'>Câmera crítica</p>
-                            <h1>{cameraCritica}</h1>
+                            <h2>{cameraCritica}</h2>
+                        </div>
+                        <div className='bloco infoNumerica epiCritico'>
+                            <p className='tituloBloco'>EPI Crítico</p>
+                            <h1>{epiCritico}</h1>
+                        </div>
+                        <div className='bloco inforOcorrenciasHora'>
+                            <p className='tituloBloco'>Ocorrências por intervalo de horário</p>
+                            <div className='auxiliarGrafico'>
+                                <ResponsiveContainer width="90%" height="100%">
+                                    <LineChart data={dadosLinha}>
+                                        <XAxis dataKey="hora" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Line type="monotone" dataKey="quantidade" stroke="var(--azulDestaque)" strokeWidth={3} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                         <div className='bloco distribuicaoPorCamera'>
                             <p className='tituloBloco'>Distribuição por câmera</p>
@@ -133,25 +194,12 @@ export default function Dashboard() {
                                 </ResponsiveContainer>
                             </div>
                         </div>
-                        <div className='bloco inforOcorrenciasHora'>
-                            <p className='tituloBloco'>Ocorrências por intervalo de horário</p>
-                            <div className='auxiliarGrafico'>
-                                <ResponsiveContainer width="90%" height="100%">
-                                    <LineChart data={dadosLinha}>
-                                        <XAxis dataKey="hora" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Line type="monotone" dataKey="quantidade" stroke="var(--azulDestaque)" strokeWidth={3} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
                         <div className='bloco falsosPositivos'>
-                            <p className='tituloBloco'>Falsos positívos</p>
-                            <h1>{falsosPositivos}</h1>
-                            <hr />
                             <p className='tituloBloco'>Intervalo com mais ocorrências</p>
-                            <h1>{intervaloMaisOcorrencias}</h1>
+                            <h1>{intervaloMaisOcorrencias.horario}</h1>
+                            <hr />
+                            <p className='tituloBloco'>Ocorrências no intervalo</p>
+                            <h1>{intervaloMaisOcorrencias.quantidade}</h1>
                         </div>
                         <div className='bloco analiseEstatistica'>
                             <p className='tituloBloco'>Análise estatística</p>
@@ -160,8 +208,8 @@ export default function Dashboard() {
                                 <b>Média diária:</b>{metricasGerais.mediaDiaria}<br />
                                 <b>Total para esta semana: </b> {metricasGerais.totalSemana} <br />
                                 <b>Média semanal:</b> {metricasGerais.mediaSemanal} <br />
-                                <b>EPI mais crítico:</b> Óculos <br />
-                                <b>Câmera com maior incidência:</b> CAM03 <br />
+                                <b>EPI crítico:</b>{epiCritico}<br />
+                                <b>Câmera com maior incidência:</b>{cameraCritica}<br />
                             </p>
                         </div>
                         <div className='bloco ocorrenciasPorTipo'>
