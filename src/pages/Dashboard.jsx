@@ -27,59 +27,59 @@ export default function Dashboard() {
     const [falsosPositivos, setFalsosPositivos] = useState(4);
     const [intervaloMaisOcorrencias, setIntervaloMaisOcorrencias] = useState('10:00');
 
-    const data = [
-        { name: "Jan", valor: 40 },
-        { name: "Fev", valor: 55 },
-        { name: "Mar", valor: 78 },
-        { name: "Abr", valor: 62 }
-    ];
+    function formatarData(dataHora) {
+        if (!dataHora) return "";
+        const date = new Date(dataHora.replace("Z", ""));
 
-    const ocorrenciasPorTipoData = [
-        { tipo: "Capacete", Quantidade: 3 },
-        { tipo: "Óculos", Quantidade: 12 },
-        { tipo: "Luvas", Quantidade: 10 },
-    ];
+        return date.toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    }
 
-    const ocorrenciasPorHoraData = [
-        { Hora: "07:00", Quantidade: 3 },
-        { Hora: "08:00", Quantidade: 0 },
-        { Hora: "09:00", Quantidade: 2 },
-        { Hora: "10:00", Quantidade: 4 },
-        { Hora: "11:00", Quantidade: 0 },
-        { Hora: "12:00", Quantidade: 1 },
-        { Hora: "13:00", Quantidade: 1 },
-        { Hora: "14:00", Quantidade: 3 },
-    ]
 
-    const distribuicaoPorCameraData = [
-        { camera: "CAM01", Quantidade: 3 },
-        { camera: "CAM02", Quantidade: 6 },
-        { camera: "CAM03", Quantidade: 7 },
-        { camera: "CAM04", Quantidade: 4 }
-    ]
-
-    const formatarData = (dataISO) => {
-        const data = new Date(dataISO);
-        return data.toLocaleString("pt-BR");
-    };
 
     const COLORS = ["#0A1E43", "#243757", "#4b6185", "#879dc0"];
 
     const [modalImagem, setModalImagem] = useState(false);
     const [dadosOcorrencia, setDadosOcorrencia] = useState([]);
 
-    const { ocorrencias, carregando, temMais, verMais, fetchOcorrencias, dadosGraficoTipoOcorrencia, fetchGraficoTipos, dadosGraficoLinha, fetchGraficoLinha } = useApp();
+    const {
+        ocorrencias,
+        carregando,
+        temMais,
+        verMais,
+        fetchOcorrencias,
+        dadosGraficoTipoOcorrencia,
+        fetchGraficoTipos,
+        dadosGraficoLinha,
+        fetchGraficoLinha,
+        metricasGerais,
+        fetchMetricasGerais,
+        dadosGraficoCameras,
+        fetchGraficoCameras
+    } = useApp();
 
     useEffect(() => {
         fetchOcorrencias();
         fetchGraficoTipos();
         fetchGraficoLinha();
+        fetchMetricasGerais();
+        fetchGraficoCameras();
     }, []);
 
     const dadosLinha = dadosGraficoLinha.horas.map((hora, index) => ({
         hora: hora,
         quantidade: dadosGraficoLinha.quantidades[index]
     }));
+
+    const distribuicaoPorCameraData = dadosGraficoCameras.dadosCompletos?.map(item => ({
+        camera: item.camera,
+        Quantidade: Number(item.total)
+    })) || [];
 
     // useEffect(() => {
     //     console.log("grafico tipos: ", dadosGraficoTipoOcorrencia);
@@ -97,7 +97,7 @@ export default function Dashboard() {
                     <section className='blocosDash'>
                         <div className='bloco infoNumerica'>
                             <p className='tituloBloco'>Total hoje</p>
-                            <h1>{totalHoje}</h1>
+                            <h1>{metricasGerais.totalHoje}</h1>
                         </div>
                         <div className='bloco infoNumerica'>
                             <p className='tituloBloco'>Taxa de conformidade</p>
@@ -119,7 +119,6 @@ export default function Dashboard() {
                                             cx="50%"
                                             cy="50%"
                                             outerRadius="90%"
-                                        // label
                                         >
                                             {distribuicaoPorCameraData.map((entry, index) => (
                                                 <Cell
@@ -158,10 +157,9 @@ export default function Dashboard() {
                             <p className='tituloBloco'>Análise estatística</p>
                             <hr />
                             <p className='inforEstatistica'>
-                                <b>Média diária:</b> 17 Ocorrências <br />
-                                <b>Total para esta semana: </b> 29 Ocorrências <br />
-                                <b>Média semanal:</b> 23 Ocorrências <br />
-                                <b>Média de tempo sem EPI:</b> 2m 23s <br />
+                                <b>Média diária:</b>{metricasGerais.mediaDiaria}<br />
+                                <b>Total para esta semana: </b> {metricasGerais.totalSemana} <br />
+                                <b>Média semanal:</b> {metricasGerais.mediaSemanal} <br />
                                 <b>EPI mais crítico:</b> Óculos <br />
                                 <b>Câmera com maior incidência:</b> CAM03 <br />
                             </p>

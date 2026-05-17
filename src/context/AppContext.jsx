@@ -15,6 +15,18 @@ export function AppProvider({ children }) {
         quantidades: []
     });
 
+    const [metricasGerais, setMetricasGerais] = useState({
+        totalHoje: 0,
+        mediaDiaria: 0,
+        totalSemana: 0,
+        mediaSemanal: 0
+    });
+    const [dadosGraficoCameras, setDadosGraficoCameras] = useState({
+        labels: [],
+        valores: []
+    });
+
+
     const fetchOcorrencias = useCallback(async (carregarMais = false) => {
         if (carregando) return;
 
@@ -94,6 +106,46 @@ export function AppProvider({ children }) {
     }, []);
 
 
+    const fetchMetricasGerais = useCallback(async () => {
+        try {
+            const response = await api.get('/metricas-gerais');
+            const metricas = response.data;
+
+            setMetricasGerais({
+                totalHoje: metricas.totalHoje,
+                mediaDiaria: metricas.mediaDiaria,
+                totalSemana: metricas.totalSemana,
+                mediaSemanal: metricas.mediaSemanal
+            });
+
+            return metricas;
+        } catch (err) {
+            console.error("Erro ao buscar métricas gerais:", err);
+            return null;
+        }
+    }, []);
+
+    const fetchGraficoCameras = useCallback(async () => {
+        try {
+            const response = await api.get('/grafico-cameras');
+            const dadosCameras = response.data;
+
+            const labelsCameras = dadosCameras.map(item => item.camera);
+            const valoresOcorrencias = dadosCameras.map(item => Number(item.total));
+
+            setDadosGraficoCameras({
+                labels: labelsCameras,
+                valores: valoresOcorrencias,
+                dadosCompletos: dadosCameras
+            });
+
+            return { labels: labelsCameras, valores: valoresOcorrencias };
+        } catch (err) {
+            console.error("Erro ao buscar dados do gráfico de câmeras:", err);
+            return { labels: [], valores: [] };
+        }
+    }, []);
+
     return (
         <AppContext.Provider
             value={{
@@ -105,7 +157,11 @@ export function AppProvider({ children }) {
                 dadosGraficoTipoOcorrencia,
                 fetchGraficoTipos,
                 dadosGraficoLinha,
-                fetchGraficoLinha
+                fetchGraficoLinha,
+                metricasGerais,
+                fetchMetricasGerais,
+                dadosGraficoCameras,
+                fetchGraficoCameras
             }}
         >
             {children}
