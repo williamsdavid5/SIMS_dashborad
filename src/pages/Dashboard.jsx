@@ -378,15 +378,17 @@ export default function Dashboard() {
     const [modalImagem, setModalImagem] = useState(false);
     const [dadosOcorrencia, setDadosOcorrencia] = useState([]);
 
-    const { ocorrencias, loadingOcorrencias, errorOcorrencias, fetchOcorrencias } = useApp();
+    const { ocorrencias, carregando, temMais, verMais, fetchOcorrencias, dadosGraficoTipoOcorrencia, fetchGraficoTipos } = useApp();
 
     useEffect(() => {
         fetchOcorrencias();
-    }, [fetchOcorrencias]);
+        fetchGraficoTipos();
+    }, []);
+
 
     // useEffect(() => {
-    //     console.log(ocorrencias);
-    // }, ocorrencias);
+    //     console.log("grafico tipos: ", dadosGraficoTipoOcorrencia);
+    // }, dadosGraficoTipoOcorrencia);
 
     return (
         <>
@@ -473,13 +475,13 @@ export default function Dashboard() {
                             <p className='tituloBloco'>Ocorrências por tipo</p>
                             <div className='auxiliarGrafico'>
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={ocorrenciasPorTipoData}>
+                                    <BarChart data={dadosGraficoTipoOcorrencia}>
                                         {/* <Legend /> */}
                                         <CartesianGrid strokeDasharray="1 1" />
-                                        <XAxis dataKey="tipo" />
+                                        <XAxis dataKey="epi" />
                                         <YAxis />
                                         <Tooltip />
-                                        <Bar dataKey="Quantidade" fill="var(--azulDestaque)" />
+                                        <Bar dataKey="total" fill="var(--azulDestaque)" />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -527,6 +529,11 @@ export default function Dashboard() {
                                     ))}
                                 </tbody>
                             </table>
+                            {temMais && (
+                                <button onClick={verMais} disabled={carregando} className='botaoVerMais'>
+                                    {carregando ? 'Carregando...' : 'Ver mais'}
+                                </button>
+                            )}
                         </div>
                     </section>
                 </section>
