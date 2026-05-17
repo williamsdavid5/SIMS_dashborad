@@ -10,6 +10,11 @@ export function AppProvider({ children }) {
     const [carregando, setCarregando] = useState(false);
     const [dadosGraficoTipoOcorrencia, setDadosGraficoTipoOcorrencia,] = useState([]);
 
+    const [dadosGraficoLinha, setDadosGraficoLinha] = useState({
+        horas: [],
+        quantidades: []
+    });
+
     const fetchOcorrencias = useCallback(async (carregarMais = false) => {
         if (carregando) return;
 
@@ -25,7 +30,6 @@ export function AppProvider({ children }) {
             });
 
             const novosDados = response.data.dados || response.data;
-            console.log(response.data);
             const paginacao = response.data.paginacao;
 
             if (carregarMais) {
@@ -62,6 +66,34 @@ export function AppProvider({ children }) {
         }
     }, []);
 
+    const fetchGraficoLinha = useCallback(async () => {
+        try {
+            const response = await api.get('/grafico-intervalos');
+            const dadosDoBanco = response.data;
+
+            const labels24Horas = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
+            const valores24Horas = Array(24).fill(0);
+
+            dadosDoBanco.forEach(item => {
+                const index = labels24Horas.indexOf(item.Hora);
+                if (index !== -1) {
+                    valores24Horas[index] = Number(item.Quantidade);
+                }
+            });
+
+            setDadosGraficoLinha({
+                horas: labels24Horas,
+                quantidades: valores24Horas
+            });
+
+            return { horas: labels24Horas, quantidades: valores24Horas };
+        } catch (err) {
+            console.error("Erro ao buscar dados do gráfico de linha:", err);
+            return { horas: [], quantidades: [] };
+        }
+    }, []);
+
+
     return (
         <AppContext.Provider
             value={{
@@ -71,7 +103,9 @@ export function AppProvider({ children }) {
                 verMais,
                 fetchOcorrencias,
                 dadosGraficoTipoOcorrencia,
-                fetchGraficoTipos
+                fetchGraficoTipos,
+                dadosGraficoLinha,
+                fetchGraficoLinha
             }}
         >
             {children}

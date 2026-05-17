@@ -58,316 +58,6 @@ export default function Dashboard() {
         { camera: "CAM04", Quantidade: 4 }
     ]
 
-    const ultimasOcorrencias = [
-        {
-            id: 1,
-            data: "2025-02-24T10:33:00",
-            camera: "CAM03",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc1.jpg"
-        },
-        {
-            id: 2,
-            data: "2025-02-24T10:40:00",
-            camera: "CAM02",
-            item: "Luvas",
-            imagemUrl: "/imagens/oc2.jpg"
-        },
-        {
-            id: 3,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        },
-        {
-            id: 4,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        },
-        {
-            id: 5,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        },
-        {
-            id: 6,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        },
-        {
-            id: 7,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        },
-        {
-            id: 8,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        },
-        {
-            id: 9,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        }, {
-            id: 10,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        },
-        {
-            id: 11,
-            data: "2025-02-24T11:02:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg"
-        }
-    ];
-
-    const historicoCompleto = [
-        // Exemplos originais
-        {
-            id: 101,
-            data: "2025-02-24T10:33:00",
-            camera: "CAM03",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.92,
-            status: 'Não confirmado'
-        },
-        {
-            id: 102,
-            data: "2025-02-24T10:33:00",
-            camera: "CAM01",
-            item: "Luva",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.87,
-            status: 'Em análise'
-        },
-        {
-            id: 103,
-            data: "2025-02-24T10:33:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.97,
-            status: 'Em análise'
-        },
-        {
-            id: 102,
-            data: "2025-02-24T10:33:00",
-            camera: "CAM01",
-            item: "Luva",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.87,
-            status: 'Confirmado'
-        },
-
-        // Novas variações
-        {
-            id: 104,
-            data: "2025-02-24T11:15:00",
-            camera: "CAM02",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.78,
-            status: 'Não confirmado'
-        },
-        {
-            id: 105,
-            data: "2025-02-24T11:15:00",
-            camera: "CAM02",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.82,
-            status: 'Não confirmado'
-        },
-        {
-            id: 106,
-            data: "2025-02-24T11:42:00",
-            camera: "CAM04",
-            item: "Luva",
-            imagemUrl: "/imagens/oc3.jpg",
-            confianca: 0.95,
-            status: 'Confirmado'
-        },
-        {
-            id: 107,
-            data: "2025-02-24T12:08:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.63,
-            status: 'Em análise'
-        },
-        {
-            id: 108,
-            data: "2025-02-24T12:30:00",
-            camera: "CAM03",
-            item: "Luva",
-            imagemUrl: "/imagens/oc3.jpg",
-            confianca: 0.91,
-            status: 'Confirmado'
-        },
-        {
-            id: 109,
-            data: "2025-02-24T13:17:00",
-            camera: "CAM02",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.72,
-            status: 'Em análise'
-        },
-        {
-            id: 110,
-            data: "2025-02-24T13:45:00",
-            camera: "CAM04",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg",
-            confianca: 0.89,
-            status: 'Não confirmado'
-        },
-        {
-            id: 111,
-            data: "2025-02-24T14:22:00",
-            camera: "CAM01",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.94,
-            status: 'Confirmado'
-        },
-        {
-            id: 112,
-            data: "2025-02-24T14:50:00",
-            camera: "CAM03",
-            item: "Luva",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.77,
-            status: 'Em análise'
-        },
-        {
-            id: 113,
-            data: "2025-02-24T15:10:00",
-            camera: "CAM02",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg",
-            confianca: 0.96,
-            status: 'Confirmado'
-        },
-        {
-            id: 114,
-            data: "2025-02-24T15:33:00",
-            camera: "CAM04",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.69,
-            status: 'Não confirmado'
-        },
-        {
-            id: 115,
-            data: "2025-02-24T16:01:00",
-            camera: "CAM01",
-            item: "Luva",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.88,
-            status: 'Em análise'
-        },
-        {
-            id: 116,
-            data: "2025-02-24T16:30:00",
-            camera: "CAM03",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg",
-            confianca: 0.93,
-            status: 'Confirmado'
-        },
-        {
-            id: 117,
-            data: "2025-02-24T16:55:00",
-            camera: "CAM02",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.84,
-            status: 'Não confirmado'
-        },
-        {
-            id: 118,
-            data: "2025-02-24T17:20:00",
-            camera: "CAM04",
-            item: "Luva",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.79,
-            status: 'Em análise'
-        },
-        {
-            id: 101,
-            data: "2025-02-24T17:45:00",
-            camera: "CAM01",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.81,
-            status: 'Confirmado'
-        },
-        {
-            id: 119,
-            data: "2025-02-25T08:30:00",
-            camera: "CAM03",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc3.jpg",
-            confianca: 0.90,
-            status: 'Não confirmado'
-        },
-        {
-            id: 120,
-            data: "2025-02-25T09:15:00",
-            camera: "CAM02",
-            item: "Luva",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.73,
-            status: 'Em análise'
-        },
-        {
-            id: 121,
-            data: "2025-02-25T09:45:00",
-            camera: "CAM04",
-            item: "Óculos",
-            imagemUrl: "/imagens/oc3.jpg",
-            confianca: 0.98,
-            status: 'Confirmado'
-        },
-        {
-            id: 122,
-            data: "2025-02-25T10:10:00",
-            camera: "CAM01",
-            item: "Capacete",
-            imagemUrl: "/imagens/oc1.jpg",
-            confianca: 0.85,
-            status: 'Em análise'
-        },
-        {
-            id: 123,
-            data: "2025-02-25T10:40:00",
-            camera: "CAM03",
-            item: "Luva",
-            imagemUrl: "/imagens/oc2.jpg",
-            confianca: 0.91,
-            status: 'Não confirmado'
-        }
-    ];
-
     const formatarData = (dataISO) => {
         const data = new Date(dataISO);
         return data.toLocaleString("pt-BR");
@@ -378,13 +68,18 @@ export default function Dashboard() {
     const [modalImagem, setModalImagem] = useState(false);
     const [dadosOcorrencia, setDadosOcorrencia] = useState([]);
 
-    const { ocorrencias, carregando, temMais, verMais, fetchOcorrencias, dadosGraficoTipoOcorrencia, fetchGraficoTipos } = useApp();
+    const { ocorrencias, carregando, temMais, verMais, fetchOcorrencias, dadosGraficoTipoOcorrencia, fetchGraficoTipos, dadosGraficoLinha, fetchGraficoLinha } = useApp();
 
     useEffect(() => {
         fetchOcorrencias();
         fetchGraficoTipos();
+        fetchGraficoLinha();
     }, []);
 
+    const dadosLinha = dadosGraficoLinha.horas.map((hora, index) => ({
+        hora: hora,
+        quantidade: dadosGraficoLinha.quantidades[index]
+    }));
 
     // useEffect(() => {
     //     console.log("grafico tipos: ", dadosGraficoTipoOcorrencia);
@@ -443,11 +138,11 @@ export default function Dashboard() {
                             <p className='tituloBloco'>Ocorrências por intervalo de horário</p>
                             <div className='auxiliarGrafico'>
                                 <ResponsiveContainer width="90%" height="100%">
-                                    <LineChart data={ocorrenciasPorHoraData}>
-                                        <XAxis dataKey="Hora" />
+                                    <LineChart data={dadosLinha}>
+                                        <XAxis dataKey="hora" />
                                         <YAxis />
                                         <Tooltip />
-                                        <Line type="monotone" dataKey="Quantidade" stroke="var(--azulDestaque)" strokeWidth={3} />
+                                        <Line type="monotone" dataKey="quantidade" stroke="var(--azulDestaque)" strokeWidth={3} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
