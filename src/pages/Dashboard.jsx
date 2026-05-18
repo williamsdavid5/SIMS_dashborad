@@ -235,7 +235,7 @@ export default function Dashboard() {
                                         <th>Data</th>
                                         <th>Câmera</th>
                                         <th>EPI</th>
-                                        {/* <th>Imagem</th> */}
+                                        <th>Captura</th>
                                         <th>Tipo</th>
                                         <th>Status</th>
                                     </tr>
@@ -247,7 +247,7 @@ export default function Dashboard() {
                                             <td>{formatarData(ocorrencia.data_hora)}</td>
                                             <td>{ocorrencia.camera}</td>
                                             <td>{ocorrencia.epi}</td>
-                                            {/* <td>
+                                            <td>
                                                 <button
                                                     className='botaoVerImagem'
                                                     onClick={() => {
@@ -259,7 +259,7 @@ export default function Dashboard() {
                                                         })
                                                     }}
                                                 >Ver</button>
-                                            </td> */}
+                                            </td>
                                             <td>{ocorrencia.tipo}</td>
                                             <td>
                                                 <p className={ocorrencia.status == 'Em análise' ? 'analise' : ocorrencia.status == 'Não confirmado' ? 'naoConfirmado' : ocorrencia.status == 'Confirmado' ? 'confirmado' : ''}>
