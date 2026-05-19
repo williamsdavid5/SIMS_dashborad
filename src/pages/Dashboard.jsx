@@ -44,7 +44,7 @@ export default function Dashboard() {
         });
     }
 
-    const COLORS = ["#0A1E43", "#243757", "#4b6185", "#879dc0"];
+    // const COLORS = ["#0A1E43", "#243757", "#4b6185", "#879dc0"];
 
     const [modalImagem, setModalImagem] = useState(false);
     const [dadosOcorrencia, setDadosOcorrencia] = useState([]);
@@ -128,6 +128,51 @@ export default function Dashboard() {
         }
 
     }, [dadosGraficoTipoOcorrencia, dadosGraficoLinha, dadosGraficoCameras]);
+
+    const COLORS = (() => {
+        const corBase = "#0A1E3F";
+        const quantidade = distribuicaoPorCameraData.length || 1;
+        const cores = [corBase];
+
+        if (quantidade === 1) return cores;
+
+        // Converte a cor base para HSL
+        const r = parseInt(corBase.slice(1, 3), 16) / 255;
+        const g = parseInt(corBase.slice(3, 5), 16) / 255;
+        const b = parseInt(corBase.slice(5, 7), 16) / 255;
+
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+
+        if (max === min) {
+            h = s = 0;
+        } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                case g: h = ((b - r) / d + 2) / 6; break;
+                default: h = ((r - g) / d + 4) / 6; break;
+            }
+        }
+
+        // Mantém o MATIZ (hue) e SATURAÇÃO originais (azul)
+        const matizFixo = h * 360; // Matiz do azul original
+        const saturacaoFixa = Math.min(50, Math.max(10, s * 100)); // Saturação entre 50-70%
+
+        // Gera apenas variações de LUMINOSIDADE dentro do azul
+        const luminosidadeMin = 15;  // mínimo (mais escuro)
+        const luminosidadeMax = 50;  // máximo (mais claro)
+        const step = (luminosidadeMax - luminosidadeMin) / (quantidade - 1);
+
+        for (let i = 1; i < quantidade; i++) {
+            const luminosidade = luminosidadeMin + (i * step);
+            cores.push(`hsl(${matizFixo}, ${saturacaoFixa}%, ${luminosidade}%)`);
+        }
+
+        return cores;
+    })();
 
     return (
         <>
