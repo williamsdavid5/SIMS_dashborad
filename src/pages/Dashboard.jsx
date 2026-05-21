@@ -3,6 +3,7 @@ import MenuLateral from './MenuLateral'
 import ModalImg from './ModalImg';
 import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext';
+import LoadingGif from '../assets/loading.gif'
 
 import {
     BarChart,
@@ -30,6 +31,7 @@ export default function Dashboard() {
         horario: '00:00',
         quantidade: 3
     });
+    const [carregandoDado, setCarregandoDado] = useState(true);
 
     function formatarData(dataHora) {
         if (!dataHora) return "";
@@ -65,12 +67,27 @@ export default function Dashboard() {
         fetchGraficoCameras
     } = useApp();
 
+    async function carregarDadosCompletos() {
+        await Promise.all([
+            fetchOcorrencias(),
+            fetchGraficoTipos(),
+            fetchGraficoLinha(),
+            fetchMetricasGerais(),
+            fetchGraficoCameras()
+        ]);
+    }
+
     useEffect(() => {
-        fetchOcorrencias();
-        fetchGraficoTipos();
-        fetchGraficoLinha();
-        fetchMetricasGerais();
-        fetchGraficoCameras();
+        const carregarDados = async () => {
+            setCarregandoDado(true);
+            try {
+                await carregarDadosCompletos();
+            } finally {
+                setCarregandoDado(false);
+            }
+        };
+
+        carregarDados();
     }, []);
 
     const dadosLinha = dadosGraficoLinha.horas.map((hora, index) => ({
@@ -183,145 +200,154 @@ export default function Dashboard() {
                         <h2>Dashboard</h2>
                         <p>Feedback visual sobre o monitoramento, observe dados relevantes.</p>
                     </header>
-                    <section className='blocosDash'>
-                        <div className='bloco infoNumerica'>
-                            <p className='tituloBloco'>Total hoje</p>
-                            <h1>{metricasGerais.totalHoje}</h1>
-                        </div>
-                        <div className='bloco infoNumerica'>
-                            <p className='tituloBloco'>Taxa de conformidade</p>
-                            <h1>{taxaConformidade}%</h1>
-                        </div>
-                        <div className='bloco infoNumerica cameraCritica'>
-                            <p className='tituloBloco'>Câmera crítica</p>
-                            <h2>{cameraCritica}</h2>
-                        </div>
-                        <div className='bloco infoNumerica epiCritico'>
-                            <p className='tituloBloco'>EPI Crítico</p>
-                            <h1>{epiCritico}</h1>
-                        </div>
-                        <div className='bloco inforOcorrenciasHora'>
-                            <p className='tituloBloco'>Ocorrências por intervalo de horário</p>
-                            <div className='auxiliarGrafico'>
-                                <ResponsiveContainer width="90%" height="100%">
-                                    <LineChart data={dadosLinha}>
-                                        <XAxis dataKey="hora" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Line type="monotone" dataKey="quantidade" stroke="var(--azulDestaque)" strokeWidth={3} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-                        <div className='bloco distribuicaoPorCamera'>
-                            <p className='tituloBloco'>Distribuição por câmera</p>
-                            <div className='auxiliarGrafico'>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={distribuicaoPorCameraData}
-                                            dataKey="Quantidade"
-                                            nameKey="camera"
-                                            cx="50%"
-                                            cy="50%"
-                                            outerRadius="90%"
-                                        >
-                                            {distribuicaoPorCameraData.map((entry, index) => (
-                                                <Cell
-                                                    key={`cell-${index}`}
-                                                    fill={COLORS[index % COLORS.length]}
-                                                />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-                        <div className='bloco falsosPositivos'>
-                            <p className='tituloBloco'>Intervalo com mais ocorrências</p>
-                            <h1>{intervaloMaisOcorrencias.horario}</h1>
-                            <hr />
-                            <p className='tituloBloco'>Ocorrências no intervalo</p>
-                            <h1>{intervaloMaisOcorrencias.quantidade}</h1>
-                        </div>
-                        <div className='bloco analiseEstatistica'>
-                            <p className='tituloBloco'>Análise estatística</p>
-                            <hr />
-                            <p className='inforEstatistica'>
-                                <b>Média diária:</b>{metricasGerais.mediaDiaria}<br />
-                                <b>Total para esta semana: </b> {metricasGerais.totalSemana} <br />
-                                <b>Média semanal:</b> {metricasGerais.mediaSemanal} <br />
-                                <b>EPI crítico:</b>{epiCritico}<br />
-                                <b>Câmera com maior incidência:</b>{cameraCritica}<br />
-                            </p>
-                        </div>
-                        <div className='bloco ocorrenciasPorTipo'>
-                            <p className='tituloBloco'>Ocorrências por tipo</p>
-                            <div className='auxiliarGrafico'>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={dadosGraficoTipoOcorrencia}>
-                                        {/* <Legend /> */}
-                                        <CartesianGrid strokeDasharray="1 1" />
-                                        <XAxis dataKey="epi" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Bar dataKey="total" fill="var(--azulDestaque)" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-                        <div className='bloco historicoCompleto'>
-                            <p className='tituloBloco'>Histórico completo</p>
-                            <table border={1} className='tabelaUltimasOcorrencias'>
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>Câmera</th>
-                                        <th>EPI</th>
-                                        <th>Captura</th>
-                                        <th>Tipo</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
+                    {carregandoDado ?
+                        <>
+                            <img src={LoadingGif} alt="" style={{ width: '60px' }} />
+                        </>
+                        :
+                        <>
+                            <section className='blocosDash'>
+                                <div className='bloco infoNumerica'>
+                                    <p className='tituloBloco'>Total hoje</p>
+                                    <h1>{metricasGerais.totalHoje}</h1>
+                                </div>
+                                <div className='bloco infoNumerica'>
+                                    <p className='tituloBloco'>Taxa de conformidade</p>
+                                    <h1>{taxaConformidade}%</h1>
+                                </div>
+                                <div className='bloco infoNumerica cameraCritica'>
+                                    <p className='tituloBloco'>Câmera crítica</p>
+                                    <h2>{cameraCritica}</h2>
+                                </div>
+                                <div className='bloco infoNumerica epiCritico'>
+                                    <p className='tituloBloco'>EPI Crítico</p>
+                                    <h1>{epiCritico}</h1>
+                                </div>
+                                <div className='bloco inforOcorrenciasHora'>
+                                    <p className='tituloBloco'>Ocorrências por intervalo de horário</p>
+                                    <div className='auxiliarGrafico'>
+                                        <ResponsiveContainer width="90%" height="100%">
+                                            <LineChart data={dadosLinha}>
+                                                <XAxis dataKey="hora" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Line type="monotone" dataKey="quantidade" stroke="var(--azulDestaque)" strokeWidth={3} />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                                <div className='bloco distribuicaoPorCamera'>
+                                    <p className='tituloBloco'>Distribuição por câmera</p>
+                                    <div className='auxiliarGrafico'>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <Pie
+                                                    data={distribuicaoPorCameraData}
+                                                    dataKey="Quantidade"
+                                                    nameKey="camera"
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    outerRadius="90%"
+                                                >
+                                                    {distribuicaoPorCameraData.map((entry, index) => (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill={COLORS[index % COLORS.length]}
+                                                        />
+                                                    ))}
+                                                </Pie>
+                                                <Tooltip />
+                                                <Legend />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                                <div className='bloco falsosPositivos'>
+                                    <p className='tituloBloco'>Intervalo com mais ocorrências</p>
+                                    <h1>{intervaloMaisOcorrencias.horario}</h1>
+                                    <hr />
+                                    <p className='tituloBloco'>Ocorrências no intervalo</p>
+                                    <h1>{intervaloMaisOcorrencias.quantidade}</h1>
+                                </div>
+                                <div className='bloco analiseEstatistica'>
+                                    <p className='tituloBloco'>Análise estatística</p>
+                                    <hr />
+                                    <p className='inforEstatistica'>
+                                        <b>Média diária:</b>{metricasGerais.mediaDiaria}<br />
+                                        <b>Total para esta semana: </b> {metricasGerais.totalSemana} <br />
+                                        <b>Média semanal:</b> {metricasGerais.mediaSemanal} <br />
+                                        <b>EPI crítico:</b>{epiCritico}<br />
+                                        <b>Câmera com maior incidência:</b>{cameraCritica}<br />
+                                    </p>
+                                </div>
+                                <div className='bloco ocorrenciasPorTipo'>
+                                    <p className='tituloBloco'>Ocorrências por tipo</p>
+                                    <div className='auxiliarGrafico'>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={dadosGraficoTipoOcorrencia}>
+                                                {/* <Legend /> */}
+                                                <CartesianGrid strokeDasharray="1 1" />
+                                                <XAxis dataKey="epi" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Bar dataKey="total" fill="var(--azulDestaque)" />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                                <div className='bloco historicoCompleto'>
+                                    <p className='tituloBloco'>Histórico completo</p>
+                                    <table border={1} className='tabelaUltimasOcorrencias'>
+                                        <thead>
+                                            <tr>
+                                                <th>Data</th>
+                                                <th>Câmera</th>
+                                                <th>EPI</th>
+                                                <th>Captura</th>
+                                                <th>Tipo</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
 
-                                <tbody>
-                                    {ocorrencias.map((ocorrencia) => (
-                                        <tr key={ocorrencia.id}>
-                                            <td>{formatarData(ocorrencia.data_hora)}</td>
-                                            <td>{ocorrencia.camera}</td>
-                                            <td>{ocorrencia.epi}</td>
-                                            <td>
-                                                <button
-                                                    className='botaoVerImagem'
-                                                    onClick={() => {
-                                                        setModalImagem(true)
-                                                        setDadosOcorrencia({
-                                                            data: ocorrencia.data_hora,
-                                                            camera: ocorrencia.camera,
-                                                            item: ocorrencia.epi
-                                                        })
-                                                    }}
-                                                >Ver</button>
-                                            </td>
-                                            <td>{ocorrencia.tipo}</td>
-                                            <td>
-                                                <p className={ocorrencia.status == 'Em análise' ? 'analise' : ocorrencia.status == 'Não confirmado' ? 'naoConfirmado' : ocorrencia.status == 'Confirmado' ? 'confirmado' : ''}>
-                                                    {ocorrencia.status}
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            {temMais && (
-                                <button onClick={verMais} disabled={carregando} className='botaoVerMais'>
-                                    {carregando ? 'Carregando...' : 'Ver mais'}
-                                </button>
-                            )}
-                        </div>
-                    </section>
+                                        <tbody>
+                                            {ocorrencias.map((ocorrencia) => (
+                                                <tr key={ocorrencia.id}>
+                                                    <td>{formatarData(ocorrencia.data_hora)}</td>
+                                                    <td>{ocorrencia.camera}</td>
+                                                    <td>{ocorrencia.epi}</td>
+                                                    <td>
+                                                        <button
+                                                            className='botaoVerImagem'
+                                                            onClick={() => {
+                                                                setModalImagem(true)
+                                                                setDadosOcorrencia({
+                                                                    data: ocorrencia.data_hora,
+                                                                    camera: ocorrencia.camera,
+                                                                    item: ocorrencia.epi
+                                                                })
+                                                            }}
+                                                        >Ver</button>
+                                                    </td>
+                                                    <td>{ocorrencia.tipo}</td>
+                                                    <td>
+                                                        <p className={ocorrencia.status == 'Em análise' ? 'analise' : ocorrencia.status == 'Não confirmado' ? 'naoConfirmado' : ocorrencia.status == 'Confirmado' ? 'confirmado' : ''}>
+                                                            {ocorrencia.status}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    {temMais && (
+                                        <button onClick={verMais} disabled={carregando} className='botaoVerMais'>
+                                            {carregando ? 'Carregando...' : 'Ver mais'}
+                                        </button>
+                                    )}
+                                </div>
+                            </section>
+                        </>
+                    }
+
                 </section>
                 {modalImagem && (
                     <ModalImg setModalImagem={setModalImagem} dadosOcorrencia={dadosOcorrencia}></ModalImg>

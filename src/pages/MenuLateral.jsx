@@ -46,12 +46,12 @@ export default function MenuLateral() {
                     >
                         Emissão de relatórios
                     </NavLink>
-                    <NavLink
+                    {/* <NavLink
                         to="/monitoramento"
                         className={({ isActive }) => isActive ? "itemAtivado" : "itemDesativado"}
                     >
                         Monitoramento ao vivo
-                    </NavLink>
+                    </NavLink> */}
                 </div>
             </aside>
         </>
