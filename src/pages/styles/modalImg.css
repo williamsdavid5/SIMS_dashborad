@@ -69,3 +69,21 @@
         /* background-color: gray; */
     }
 }
+
+@media (min-width: 2000px) {
+    .janelaModal {
+        width: 90%;
+        height: 90dvh;
+    }
+
+    .auxImagem {
+        /* height: 80%;
+        width: auto;
+        flex: none; */
+    }
+
+    .auxImagem img {
+        width: auto;
+        height: 100%;
+    }
+}

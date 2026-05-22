@@ -340,4 +340,14 @@
     }
 }
 
-@media (max-width: 500px) {}
+@media (min-width: 2000px) {
+    .inforOcorrenciasHora {
+        grid-column: span 10;
+        grid-row: span 3;
+    }
+
+    .historicoCompleto {
+        grid-column: span 10;
+        grid-row: span 5;
+    }
+}
