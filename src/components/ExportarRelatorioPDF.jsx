@@ -3,7 +3,10 @@
 
 import { useApp } from '../context/AppContext';
 import { useState, useEffect } from 'react';
-import { pdf, Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { pdf, Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/renderer';
+
+import SIMSLogo from '../assets/sims_horizontal.png'
+import VIICLogo from '../assets/viic_logo_azul.png'
 
 // ─── Paleta de cores ──────────────────────────────────────────────────────────
 const COR_AZUL = '#0A1E3F';
@@ -55,6 +58,21 @@ const s = StyleSheet.create({
         fontSize: 12,
         color: COR_AZUL,
         fontFamily: 'Helvetica-Bold',
+    },
+    headerLogos: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        marginBottom: 10,
+    },
+    logo: {
+        height: 28,
+        objectFit: 'contain',
+    },
+    logo2: {
+        height: 24,
+        objectFit: 'contain',
     },
 
     // Seções
@@ -151,12 +169,16 @@ const RelatorioPDF = ({
 
             {/* Header */}
             <View style={s.header}>
+                <View style={s.headerLogos}>
+                    <Image src={SIMSLogo} style={s.logo2} />
+                    <Image src={VIICLogo} style={s.logo} />
+                </View>
                 <Text style={s.headerTitulo}>Relatório SIMS</Text>
                 <Text style={s.headerSubtitulo}>Sistema Inteligente de Monitoramento e Segurança</Text>
                 <Text style={s.headerResumo}>Resumo de detecções de EPI</Text>
                 <View style={s.badge}>
                     <Text style={s.badgeTexto}>
-                        Emitido em: {new Date().toLocaleString('pt-BR')}
+                        Emitido em: {new Date().toLocaleDateString('pt-BR')}
                     </Text>
                 </View>
             </View>
@@ -249,26 +271,23 @@ const ExportarRelatorioPDF = () => {
         fetchGraficoCameras,
     } = useApp();
 
-    const [carregandoDados, setCarregandoDados] = useState(true);
+    const [carregandoDados, setCarregandoDados] = useState(false);
     const [gerandoPDF, setGerandoPDF] = useState(false);
 
-    useEffect(() => {
-        const carregarDados = async () => {
-            setCarregandoDados(true);
-            try {
-                await Promise.all([
-                    fetchOcorrencias(),
-                    fetchGraficoTipos(),
-                    fetchGraficoLinha(),
-                    fetchMetricasGerais(),
-                    fetchGraficoCameras(),
-                ]);
-            } finally {
-                setCarregandoDados(false);
-            }
-        };
-        carregarDados();
-    }, []);
+    const carregarDados = async () => {
+        setCarregandoDados(true);
+        try {
+            await Promise.all([
+                fetchOcorrencias(),
+                fetchGraficoTipos(),
+                fetchGraficoLinha(),
+                fetchMetricasGerais(),
+                fetchGraficoCameras(),
+            ]);
+        } finally {
+            setCarregandoDados(false);
+        }
+    };
 
     const formatarDataHora = (dataHora) => {
         if (!dataHora) return '';
@@ -287,6 +306,9 @@ const ExportarRelatorioPDF = () => {
     };
 
     const gerarRelatorioPDF = async () => {
+
+        carregarDados();
+
         if (gerandoPDF) return;
         setGerandoPDF(true);
 
@@ -390,7 +412,7 @@ const ExportarRelatorioPDF = () => {
             onMouseEnter={(e) => { if (!desabilitado) e.target.style.backgroundColor = '#1a2e4f'; }}
             onMouseLeave={(e) => { if (!desabilitado) e.target.style.backgroundColor = '#0A1E3F'; }}
         >
-            {gerandoPDF ? '⏳ Gerando PDF...' : carregandoDados ? '📊 Carregando dados...' : '📄 Gerar Relatório'}
+            {gerandoPDF ? 'Gerando PDF...' : carregandoDados ? 'Gerando PDF...' : 'Gerar Relatório'}
         </button>
     );
 };
