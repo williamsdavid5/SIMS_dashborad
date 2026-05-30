@@ -1,0 +1,147 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+    margin: 0px;
+    padding: 0px;
+}
+
+hr {
+    margin: 10px 0px;
+}
+
+h3 {
+    color: #0A1E3F;
+}
+
+.pRegular {
+    font-size: 11pt;
+}
+
+.destaqueAzul {
+    color: #0A1E3F;
+}
+
+.textoClaro {
+    color: #a7abb5;
+}
+
+
+.secaoTitulo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.emitidoEm {
+    width: 100%;
+    background-color: #D4DBED;
+    /* color: white; */
+    border-radius: 5px;
+    text-align: center;
+    padding: 5px;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.secaoTitulo hr {
+    width: 100%;
+    border: solid 2px #0A1E3F;
+}
+
+.blocoInfo {
+    /* background-color: rgb(236, 236, 236); */
+    padding: 0px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.blocoInfo p {
+    margin-left: 20px;
+}
+
+.secaoDividida {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.secaoDividida p {
+    width: 50%;
+}
+
+.pDescricao {
+    margin: 0 !important;
+    /* padding: 0 !important; */
+}
+
+/* .blocoInfo h3 {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+} */
+
+
+
+/* Folha A4 */
+.a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    background-color: #F4F4FF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    padding: 20mm;
+    position: relative;
+    page-break-after: avoid;
+    break-inside: avoid;
+}
+
+/* Estilos para impressão */
+@media print {
+    body {
+        background-color: white;
+        padding: 0;
+        margin: 0;
+    }
+
+    .a4-page {
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
+}
+
+
+@media print {
+    .debug-info {
+        display: none;
+    }
+}

@@ -277,45 +277,6 @@ export default function EmissaoRelatorios() {
                         <h1>Emissão de relatórios</h1>
                         <p>Aqui você pode gerar relatórios personalizados que auxiliam na tomada de decisão, no acompanhamento de conformidades e na identificação de tendências de segurança. Os relatórios disponíveis permitem desde análises executivas rápidas até detalhamentos específicos por setor, garantindo que gestores e equipes tenham acesso às informações necessárias para fortalecer a cultura de segurança e reduzir riscos operacionais.</p>
                         <hr />
-                        <p>Tipo</p>
-                        <select>
-                            <option value="relatorio-executivo-diario">Relatório Executivo Diário</option>
-                            <option value="analise-nao-conformidades">Análise de Não Conformidades</option>
-                            <option value="relatorio-area-setor">Relatório por Área/Setor</option>
-                            <option value="analise-tendencias">Análise de Tendências</option>
-                            <option value="relatorio-performance-epi">Relatório de Performance por EPI</option>
-                            <option value="resumo-alertas-criticos">Resumo de Alertas Críticos</option>
-                            <option value="relatorio-auditoria">Relatório para Auditoria</option>
-                            <option value="dashboard-diretoria">Dashboard para Diretoria</option>
-                        </select>
-                        Período
-                        <span className='auxiliarFiltroHistorico auxiliarPeriodoRelatorio'>
-                            <input
-                                type="text"
-                                name=""
-                                id=""
-                                placeholder='DD/MM/AAAA'
-                                value={dataFiltroInicio}
-                                onChange={(e) => handleChange(e, setDataFiltroInicio)}
-                            />
-                            <p>a</p>
-                            <input
-                                type="text"
-                                name=""
-                                id=""
-                                placeholder='DD/MM/AAAA'
-                                value={dataFiltroFim}
-                                onChange={(e) => handleChange(e, setDataFiltroFim)}
-                            />
-                            <p>ou</p>
-                            <select name="" id="">
-                                <option value="">Hoje</option>
-                                <option value="">Últimos 7 dias</option>
-                                <option value="">Últimos 30 dias</option>
-                                <option value="">Últimos 60 dias</option>
-                                <option value="">Últimos 90 dias</option>
-                            </select>
-                        </span>
                         <p>Formato</p>
                         <select name="" id="">
                             <option value="">PDF</option>
@@ -326,10 +287,6 @@ export default function EmissaoRelatorios() {
                             <label htmlFor="">
                                 <input type="checkbox" name="" id="" />
                                 Incluir gráficos
-                            </label>
-                            <label htmlFor="">
-                                <input type="checkbox" name="" id="" />
-                                Incluir recomendações
                             </label>
                         </span>
                         {/* <button onClick={() => gerarPDF()}>

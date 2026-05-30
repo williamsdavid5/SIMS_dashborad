@@ -37,7 +37,7 @@ export function AppProvider({ children }) {
             const response = await api.get('/ocorrencias', {
                 params: {
                     pagina: paginaAtual,
-                    limite: 10
+                    limite: 20
                 }
             });
 

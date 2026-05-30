@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo de Relatório - Tamanho A4</title>
+    <link rel="stylesheet" href="paginaBase.css">
+</head>
+
+<body>
+    <div class="a4-page">
+
+        <header class="secaoTitulo">
+            <h1 class="destaqueAzul">Relatório SIMS</h1>
+            <div class="textoClaro">Sistema Inteligente de Monitoramento e Segurança</div>
+            <p>Resumo de detecções de EPI</p>
+            <p class="destaqueAzul emitidoEm"><b>Emitido em: 30/05/2026</b></p>
+            <!-- <hr> -->
+        </header>
+
+        <section class="blocoInfo">
+            <h3>Informações Gerais</h3>
+            <hr>
+            <p class="pRegular">
+                <b>Total de alertas hoje:</b> 23 <br>
+                <b>Média diária de alertas: </b> 36.5 <br>
+                <b>Taxa geral de conformidade: </b> 93.52% <br>
+                <b>EPI(s) mais negligenciado(s): </b> Bota, Óculos <br>
+                <b>Câmera com maior incidência: </b> Monitor local <br>
+                <b>Intervalo com mais ocorrências: </b> 08:00
+            </p>
+        </section>
+
+        <section class="blocoInfo">
+            <h3>Ocorrências por Tipo</h3>
+            <p class="pRegular pDescricao">
+                Números de detcções para cada EPI, esse dado permite visualizar o cenário atual, indicando quais os EPIs
+                mais negligenciados.
+            </p>
+            <hr>
+            <div class="secaoDividida">
+                <p class="pRegular">
+                    <b>Máscara:</b> 25<br>
+                    <b>Bota:</b> 24<br>
+                    <b>Óculos:</b> 24<br>
+                    <b>Luva:</b> 23<br>
+                </p>
+                <p class="pRegular">
+                    <b>Colete:</b> 23<br>
+                    <b>Abafador:</b> 21<br>
+                    <b>Capacete:</b> 7
+                </p>
+            </div>
+        </section>
+
+        <section class="blocoInfo">
+            <h3>Detecções por câmera</h3>
+            <p class="pRegular pDescricao">
+                Números de detcções para cada câmera, esse dado indica as áreas com maior negligência.
+            </p>
+            <hr>
+            <p class="pRegular">
+                <b>Monitor Local:</b> 100 <br>
+                <b>GSL-1799-SAM-0199-CAM02: </b>20 <br>
+                <b>GSL-1921-GLC-4006-CAM01: </b> 15 <br>
+                <b>GSL-1914-GLC-4796-CAM02: </b>7
+            </p>
+        </section>
+
+        <section class="blocoInfo">
+            <h3>Detecções por intervalo</h3>
+            <p class="pRegular pDescricao">
+                Intervalos com maior quantidade de detecções, os horários indicam o início do intervalo, durando
+                exatamente 1 hora.
+                Exemplo: o intervalo das 08:00 finaliza às 08:59, e as detecções registradas ocorreram dentro desse
+                horário.
+            </p>
+            <hr>
+            <p class="pRegular textoClaro">Obs: os intervalos estão organizados por número de detecções,
+                os intervalos que não aparecem, não possuem detecções registradas.</p> <br>
+            <p class="pRegular">
+                <b>08:00 - </b> 40 ocorrências <br>
+                <b>22:00 - </b> 27 ocorrências <br>
+                <b>20:00 - </b> 21 ocorrências <br>
+                <b>12:00 - </b> 20 ocorrências <br>
+                <b>21:00 - </b> 18 ocorrências <br>
+                <b>13:00 - </b> 18 ocorrências
+            </p>
+        </section>
+
+
+
+
+</body>
+
+</html>

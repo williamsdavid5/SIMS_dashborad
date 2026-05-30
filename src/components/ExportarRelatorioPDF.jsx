@@ -1,347 +1,396 @@
 // components/ExportarRelatorioPDF.jsx
-import html2pdf from 'html2pdf.js';
-import SimsLogo from '../assets/SIMS_logo_branca.png'
-import ViicLogo from '../assets/viic_logo_branca.png'
+// Dependência: npm install @react-pdf/renderer
+
+import { useApp } from '../context/AppContext';
+import { useState, useEffect } from 'react';
+import { pdf, Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+
+// ─── Paleta de cores ──────────────────────────────────────────────────────────
+const COR_AZUL = '#0A1E3F';
+const COR_FUNDO = '#F4F4FF';
+const COR_BADGE = '#D4DBED';
+const COR_CINZA = '#a7abb5';
+const COR_TEXTO = '#333333';
+
+// ─── Estilos ──────────────────────────────────────────────────────────────────
+const s = StyleSheet.create({
+    page: {
+        backgroundColor: COR_FUNDO,
+        paddingTop: 40,
+        paddingBottom: 40,
+        paddingHorizontal: 48,
+        fontFamily: 'Helvetica',
+    },
+
+    // Header
+    header: {
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    headerTitulo: {
+        fontSize: 22,
+        fontFamily: 'Helvetica-Bold',
+        color: COR_AZUL,
+    },
+    headerSubtitulo: {
+        fontSize: 10,
+        color: COR_CINZA,
+        marginTop: 2,
+    },
+    headerResumo: {
+        fontSize: 11,
+        color: COR_TEXTO,
+        marginTop: 2,
+    },
+    badge: {
+        marginTop: 8,
+        backgroundColor: COR_BADGE,
+        borderRadius: 4,
+        paddingVertical: 5,
+        paddingHorizontal: 12,
+        width: '100%',
+        alignItems: 'center',
+    },
+    badgeTexto: {
+        fontSize: 12,
+        color: COR_AZUL,
+        fontFamily: 'Helvetica-Bold',
+    },
+
+    // Seções
+    secao: {
+        marginBottom: 18,
+    },
+    secaoTitulo: {
+        fontSize: 12,
+        fontFamily: 'Helvetica-Bold',
+        color: COR_AZUL,
+        marginBottom: 4,
+    },
+    divisor: {
+        borderBottomWidth: 1.5,
+        borderBottomColor: COR_AZUL,
+        marginBottom: 6,
+    },
+    descricao: {
+        fontSize: 11,
+        color: '#444444',
+        marginBottom: 5,
+    },
+
+    // Linhas de dados
+    linha: {
+        flexDirection: 'row',
+        marginBottom: 3,
+        paddingLeft: 12,
+    },
+    label: {
+        fontSize: 11,
+        fontFamily: 'Helvetica-Bold',
+        color: COR_TEXTO,
+    },
+    valor: {
+        fontSize: 11,
+        color: COR_TEXTO,
+    },
+
+    // Duas colunas
+    duasColunas: {
+        flexDirection: 'row',
+        paddingLeft: 12,
+    },
+    coluna: {
+        flex: 1,
+    },
+
+    // Obs
+    obs: {
+        fontSize: 9,
+        color: COR_CINZA,
+        paddingLeft: 12,
+        marginBottom: 5,
+    },
+});
+
+// ─── Componentes auxiliares ───────────────────────────────────────────────────
+
+const Linha = ({ label, valor }) => (
+    <View style={s.linha}>
+        <Text style={s.label}>{label} </Text>
+        <Text style={s.valor}>{valor}</Text>
+    </View>
+);
+
+const Secao = ({ titulo, descricao, children }) => (
+    <View style={s.secao}>
+        <Text style={s.secaoTitulo}>{titulo}</Text>
+        {descricao && <Text style={s.descricao}>{descricao}</Text>}
+        <View style={s.divisor} />
+        {children}
+    </View>
+);
+
+// ─── Documento PDF ────────────────────────────────────────────────────────────
+
+const RelatorioPDF = ({
+    totalHoje,
+    mediaDiaria,
+    taxaConformidade,
+    epiMaisNegligenciadoText,
+    cameraMaiorIncidencia,
+    horarioPico,
+    tiposPrimeiraColuna,
+    tiposSegundaColuna,
+    camerasOrdenadas,
+    intervalosComOcorrencias,
+    ultimasOcorrencias,
+    formatarDataHora,
+}) => (
+    <Document>
+        <Page size="A4" style={s.page}>
+
+            {/* Header */}
+            <View style={s.header}>
+                <Text style={s.headerTitulo}>Relatório SIMS</Text>
+                <Text style={s.headerSubtitulo}>Sistema Inteligente de Monitoramento e Segurança</Text>
+                <Text style={s.headerResumo}>Resumo de detecções de EPI</Text>
+                <View style={s.badge}>
+                    <Text style={s.badgeTexto}>
+                        Emitido em: {new Date().toLocaleString('pt-BR')}
+                    </Text>
+                </View>
+            </View>
+
+            {/* Informações Gerais */}
+            <Secao titulo="Informações Gerais">
+                <Linha label="Total de alertas hoje:" valor={String(totalHoje)} />
+                <Linha label="Média diária de alertas:" valor={String(mediaDiaria)} />
+                <Linha label="Taxa geral de conformidade:" valor={`${taxaConformidade}%`} />
+                <Linha label="EPI(s) mais negligenciado(s):" valor={epiMaisNegligenciadoText} />
+                <Linha label="Câmera com maior incidência:" valor={cameraMaiorIncidencia} />
+                <Linha label="Intervalo com mais ocorrências:" valor={horarioPico} />
+            </Secao>
+
+            {/* Ocorrências por Tipo */}
+            <Secao
+                titulo="Ocorrências por Tipo"
+                descricao="Números de detecções para cada EPI, esse dado permite visualizar o cenário atual, indicando quais os EPIs mais negligenciados."
+            >
+                <View style={s.duasColunas}>
+                    <View style={s.coluna}>
+                        {tiposPrimeiraColuna.map((tipo, i) => (
+                            <View key={i} style={s.linha}>
+                                <Text style={s.label}>{tipo.epi}: </Text>
+                                <Text style={s.valor}>{tipo.total}</Text>
+                            </View>
+                        ))}
+                    </View>
+                    <View style={s.coluna}>
+                        {tiposSegundaColuna.map((tipo, i) => (
+                            <View key={i} style={s.linha}>
+                                <Text style={s.label}>{tipo.epi}: </Text>
+                                <Text style={s.valor}>{tipo.total}</Text>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            </Secao>
+
+            {/* Detecções por câmera */}
+            <Secao
+                titulo="Detecções por câmera"
+                descricao="Números de detecções para cada câmera, esse dado indica as áreas com maior negligência."
+            >
+                {camerasOrdenadas.map((camera, i) => (
+                    <Linha key={i} label={`${camera.camera}:`} valor={String(camera.total)} />
+                ))}
+            </Secao>
+
+            {/* Detecções por intervalo */}
+            <Secao
+                titulo="Detecções por intervalo"
+                descricao="Intervalos com maior quantidade de detecções, os horários indicam o início do intervalo, durando exatamente 1 hora. Exemplo: o intervalo das 08:00 finaliza às 08:59, e as detecções registradas ocorreram dentro desse horário."
+            >
+                <Text style={s.obs}>
+                    Obs: os intervalos estão organizados por número de detecções, os intervalos que não aparecem, não possuem detecções registradas.
+                </Text>
+                {intervalosComOcorrencias.slice(0, 6).map((item, i) => (
+                    <Linha key={i} label={`${item.horario} -`} valor={`${item.quantidade} ocorrências`} />
+                ))}
+            </Secao>
+
+            {/* Últimas Ocorrências */}
+            {/* <Secao titulo="Últimas Ocorrências">
+                {ultimasOcorrencias.map((occ, i) => (
+                    <View key={i} style={s.linha}>
+                        <Text style={s.label}>{formatarDataHora(occ.data_hora)} </Text>
+                        <Text style={s.valor}>- {occ.camera} - {occ.epi}</Text>
+                    </View>
+                ))}
+            </Secao> */}
+
+        </Page>
+    </Document>
+);
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 
 const ExportarRelatorioPDF = () => {
-    const gerarRelatorioPDF = () => {
-        // Criar um elemento temporário para o relatório
-        const relatorioElement = document.createElement('div');
+    const {
+        ocorrencias,
+        fetchOcorrencias,
+        dadosGraficoTipoOcorrencia,
+        fetchGraficoTipos,
+        dadosGraficoLinha,
+        fetchGraficoLinha,
+        metricasGerais,
+        fetchMetricasGerais,
+        dadosGraficoCameras,
+        fetchGraficoCameras,
+    } = useApp();
 
-        // Dentro da função gerarRelatorioPDF, use este HTML otimizado para A4:
+    const [carregandoDados, setCarregandoDados] = useState(true);
+    const [gerandoPDF, setGerandoPDF] = useState(false);
 
-        relatorioElement.innerHTML = `
-        <div style="
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            width: 210mm;
-            min-height: auto;
-            margin: 0 auto;
-            padding: 12mm;
-            background: #F4F4FF;
-            box-sizing: border-box;
-        ">
-            <div style="
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: linear-gradient(135deg, #0A1E3F 0%, #000c1f 100%);
-            border-radius: 8px;
-            color: white;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            ">
-            <img src=${SimsLogo} alt="SIMS Logo" style="height: 50px; width: auto;" />
-            
-            <div style="flex: 1; text-align: center;">
-                <h1 style="
-                font-size: 24px;
-                margin: 0 0 8px 0;
-                font-weight: 700;
-                ">
-                RELATÓRIO DE OCORRÊNCIAS SIMS
-                </h1>
-                <p style="
-                font-size: 11px;
-                margin: 0;
-                opacity: 0.9;
-                ">
-                Sistema Inteligente de Monitoramento e Segurança
-                </p>
-                <p style="
-                font-size: 10px;
-                margin: 10px 0 0 0;
-                opacity: 0.8;
-                ">
-                ${new Date().toLocaleDateString('pt-BR')} • ${new Date().toLocaleTimeString('pt-BR')}
-                </p>
-            </div>
-            
-            <img src=${ViicLogo} alt="VIIC Logo" style="height: 50px; width: auto;" />
-            </div>
-
-            <!-- Cards de Métricas (2 colunas para economizar espaço) -->
-            <div style="
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-            ">
-            <div style="
-                background: white;
-                padding: 12px;
-                border-radius: 6px;
-                border-left: 3px solid #0A1E3F;
-            ">
-                <div style="color: #727376; font-size: 10px; margin-bottom: 4px;">TOTAL HOJE</div>
-                <div style="color: #0A1E3F; font-size: 24px; font-weight: bold;">27</div>
-            </div>
-            
-            <div style="
-                background: white;
-                padding: 12px;
-                border-radius: 6px;
-                border-left: 3px solid #0A1E3F;
-            ">
-                <div style="color: #727376; font-size: 10px; margin-bottom: 4px;">TAXA DE CONFORMIDADE</div>
-                <div style="color: #0A1E3F; font-size: 24px; font-weight: bold;">91.23%</div>
-            </div>
-            
-            <div style="
-                background: white;
-                padding: 12px;
-                border-radius: 6px;
-                border-left: 3px solid #0A1E3F;
-            ">
-                <div style="color: #727376; font-size: 10px; margin-bottom: 4px;">CÂMERA CRÍTICA</div>
-                <div style="color: #0A1E3F; font-size: 24px; font-weight: bold;">CAM03</div>
-            </div>
-            
-            <div style="
-                background: white;
-                padding: 12px;
-                border-radius: 6px;
-                border-left: 3px solid #0A1E3F;
-            ">
-                <div style="color: #727376; font-size: 10px; margin-bottom: 4px;">FALSOS POSITIVOS</div>
-                <div style="color: #0A1E3F; font-size: 24px; font-weight: bold;">4</div>
-            </div>
-            </div>
-
-            <!-- Distribuição por Câmera e Ocorrências por Tipo (lado a lado) -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-            <!-- Distribuição por Câmera -->
-            <div style="background: white; padding: 12px; border-radius: 6px;">
-                <h3 style="color: #0A1E3F; font-size: 13px; margin: 0 0 10px 0; font-weight: 600;">
-                Distribuição por Câmera
-                </h3>
-                <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
-                <thead>
-                    <tr style="background: #D4DBED;">
-                    <th style="padding: 6px; text-align: left; color: #0A1E3F;">Câmera</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">Ocorr.</th>
-                    <th style="padding: 6px; text-align: right; color: #0A1E3F;">%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">CAM01</td>
-                    <td style="padding: 5px; text-align: center; color: #727376;">3</td>
-                    <td style="padding: 5px; text-align: right; color: #727376;">15%</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">CAM02</td>
-                    <td style="padding: 5px; text-align: center; color: #727376;">6</td>
-                    <td style="padding: 5px; text-align: right; color: #727376;">30%</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">CAM03</td>
-                    <td style="padding: 5px; text-align: center; color: #727376;">7</td>
-                    <td style="padding: 5px; text-align: right; color: #727376;">35%</td>
-                    </tr>
-                    <tr>
-                    <td style="padding: 5px; color: #727376;">CAM04</td>
-                    <td style="padding: 5px; text-align: center; color: #727376;">4</td>
-                    <td style="padding: 5px; text-align: right; color: #727376;">20%</td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
-
-            <!-- Ocorrências por Tipo -->
-            <div style="background: white; padding: 12px; border-radius: 6px;">
-                <h3 style="color: #0A1E3F; font-size: 13px; margin: 0 0 10px 0; font-weight: 600;">
-                Ocorrências por Tipo de EPI
-                </h3>
-                <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
-                <thead>
-                    <tr style="background: #D4DBED;">
-                    <th style="padding: 6px; text-align: left; color: #0A1E3F;">Tipo de EPI</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">Quant.</th>
-                    <th style="padding: 6px; text-align: right; color: #0A1E3F;">%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">Capacete</td>
-                    <td style="padding: 5px; text-align: center; color: #727376;">3</td>
-                    <td style="padding: 5px; text-align: right; color: #727376;">12%</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">Óculos</td>
-                    <td style="padding: 5px; text-align: center; color: #727376;">12</td>
-                    <td style="padding: 5px; text-align: right; color: #727376;">48%</td>
-                    </tr>
-                    <tr>
-                    <td style="padding: 5px; color: #727376;">Luvas</td>
-                    <td style="padding: 5px; text-align: center; color: #727376;">10</td>
-                    <td style="padding: 5px; text-align: right; color: #727376;">40%</td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
-            </div>
-
-            <!-- Ocorrências por Horário -->
-            <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
-            <h3 style="color: #0A1E3F; font-size: 13px; margin: 0 0 10px 0; font-weight: 600;">
-                Ocorrências por Horário
-            </h3>
-            <table style="width: 100%; border-collapse: collapse; font-size: 9px;">
-                <thead>
-                <tr style="background: #D4DBED;">
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">07:00</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">08:00</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">09:00</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">10:00</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">11:00</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">12:00</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">13:00</th>
-                    <th style="padding: 6px; text-align: center; color: #0A1E3F;">14:00</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td style="padding: 6px; text-align: center; background: #0A1E3F; color: white; font-weight: bold;">3</td>
-                    <td style="padding: 6px; text-align: center; background: #D4DBED; color: #0A1E3F;">0</td>
-                    <td style="padding: 6px; text-align: center; background: #D4DBED; color: #0A1E3F;">2</td>
-                    <td style="padding: 6px; text-align: center; background: #0A1E3F; color: white; font-weight: bold;">4</td>
-                    <td style="padding: 6px; text-align: center; background: #D4DBED; color: #0A1E3F;">0</td>
-                    <td style="padding: 6px; text-align: center; background: #D4DBED; color: #0A1E3F;">1</td>
-                    <td style="padding: 6px; text-align: center; background: #D4DBED; color: #0A1E3F;">1</td>
-                    <td style="padding: 6px; text-align: center; background: #D4DBED; color: #0A1E3F;">3</td>
-                </tr>
-                </tbody>
-            </table>
-            <p style="margin: 8px 0 0 0; font-size: 9px; color: #727376; text-align: center;">
-                Horário de pico: 10:00 (4 ocorrências)
-            </p>
-            </div>
-
-            <!-- Análise Estatística em grid compacta -->
-            <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
-            <h3 style="color: #0A1E3F; font-size: 13px; margin: 0 0 10px 0; font-weight: 600;">
-                Análise Estatística
-            </h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                <div>
-                <div style="color: #727376; font-size: 9px;">Média diária</div>
-                <div style="color: #0A1E3F; font-size: 14px; font-weight: 600;">17</div>
-                </div>
-                <div>
-                <div style="color: #727376; font-size: 9px;">Total esta semana</div>
-                <div style="color: #0A1E3F; font-size: 14px; font-weight: 600;">29</div>
-                </div>
-                <div>
-                <div style="color: #727376; font-size: 9px;">Média semanal</div>
-                <div style="color: #0A1E3F; font-size: 14px; font-weight: 600;">23</div>
-                </div>
-                <div>
-                <div style="color: #727376; font-size: 9px;">Tempo médio sem EPI</div>
-                <div style="color: #0A1E3F; font-size: 14px; font-weight: 600;">2m23s</div>
-                </div>
-                <div>
-                <div style="color: #727376; font-size: 9px;">EPI mais crítico</div>
-                <div style="color: #0A1E3F; font-size: 14px; font-weight: 600;">Óculos</div>
-                </div>
-                <div>
-                <div style="color: #727376; font-size: 9px;">Câmera crítica</div>
-                <div style="color: #0A1E3F; font-size: 14px; font-weight: 600;">CAM03</div>
-                </div>
-            </div>
-            </div>
-
-            <!-- Últimas Ocorrências (limitado a 5 para caber na página) -->
-            <div style="background: white; padding: 12px; border-radius: 6px;">
-            <h3 style="color: #0A1E3F; font-size: 13px; margin: 0 0 10px 0; font-weight: 600;">
-                Últimas Ocorrências
-            </h3>
-            <table style="width: 100%; border-collapse: collapse; font-size: 9px;">
-                <thead>
-                <tr style="background: #D4DBED;">
-                    <th style="padding: 6px; text-align: left; color: #0A1E3F;">Data/Hora</th>
-                    <th style="padding: 6px; text-align: left; color: #0A1E3F;">Câmera</th>
-                    <th style="padding: 6px; text-align: left; color: #0A1E3F;">EPI</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">24/02 10:33</td>
-                    <td style="padding: 5px; color: #727376;">CAM03</td>
-                    <td style="padding: 5px; color: #727376;">Capacete</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">24/02 10:40</td>
-                    <td style="padding: 5px; color: #727376;">CAM02</td>
-                    <td style="padding: 5px; color: #727376;">Luvas</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">24/02 11:02</td>
-                    <td style="padding: 5px; color: #727376;">CAM01</td>
-                    <td style="padding: 5px; color: #727376;">Óculos</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #D4DBED;">
-                    <td style="padding: 5px; color: #727376;">24/02 14:22</td>
-                    <td style="padding: 5px; color: #727376;">CAM01</td>
-                    <td style="padding: 5px; color: #727376;">Capacete</td>
-                </tr>
-                <tr>
-                    <td style="padding: 5px; color: #727376;">24/02 15:10</td>
-                    <td style="padding: 5px; color: #727376;">CAM02</td>
-                    <td style="padding: 5px; color: #727376;">Óculos</td>
-                </tr>
-                </tbody>
-            </table>
-            </div>
-
-            <!-- Rodapé -->
-            <div style="
-            text-align: center;
-            padding: 12px;
-            margin-top: 10px;
-            border-top: 1px solid #D4DBED;
-            color: #727376;
-            font-size: 8px;
-            page-break-inside: avoid;
-            ">
-            <p>Relatório gerado automaticamente pelo Sistema de Detecção de EPIs</p>
-            </div>
-        `;
-
-        // Adicionar ao body temporariamente
-        document.body.appendChild(relatorioElement);
-
-        // Configurações do PDF
-        const opt = {
-            margin: [0.0, 0.0, 0.0, 0.0],
-            filename: `relatorio_vendas_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                letterRendering: true,
-                useCORS: true,
-                logging: false
-            },
-            jsPDF: {
-                unit: 'in',
-                format: 'a4',
-                orientation: 'portrait'
+    useEffect(() => {
+        const carregarDados = async () => {
+            setCarregandoDados(true);
+            try {
+                await Promise.all([
+                    fetchOcorrencias(),
+                    fetchGraficoTipos(),
+                    fetchGraficoLinha(),
+                    fetchMetricasGerais(),
+                    fetchGraficoCameras(),
+                ]);
+            } finally {
+                setCarregandoDados(false);
             }
         };
+        carregarDados();
+    }, []);
 
-        // Gerar PDF
-        html2pdf().set(opt).from(relatorioElement).save().then(() => {
-            // Remover elemento temporário após gerar
-            document.body.removeChild(relatorioElement);
-        });
+    const formatarDataHora = (dataHora) => {
+        if (!dataHora) return '';
+        try {
+            const date = new Date(dataHora);
+            if (isNaN(date.getTime())) return '';
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        } catch {
+            return '';
+        }
     };
+
+    const gerarRelatorioPDF = async () => {
+        if (gerandoPDF) return;
+        setGerandoPDF(true);
+
+        try {
+            // ── Calcular dados ──────────────────────────────────────────────
+            const tiposOcorrencias = dadosGraficoTipoOcorrencia || [];
+
+            const maiorTotal = tiposOcorrencias.length > 0
+                ? Math.max(...tiposOcorrencias.map(i => i.total || 0))
+                : 0;
+            const epiMaisNegligenciadoText = tiposOcorrencias
+                .filter(i => (i.total || 0) === maiorTotal)
+                .map(i => i.epi)
+                .join(', ') || 'N/A';
+
+            const camerasData = dadosGraficoCameras?.dadosCompletos || [];
+            const cameraMaiorIncidencia = camerasData.length > 0
+                ? camerasData.reduce((max, i) => (i.total || 0) > (max.total || 0) ? i : max, camerasData[0]).camera || 'N/A'
+                : 'N/A';
+
+            let horarioPico = 'N/A';
+            if (dadosGraficoLinha?.quantidades?.length > 0) {
+                const maiorQtd = Math.max(...dadosGraficoLinha.quantidades);
+                if (maiorQtd > 0) {
+                    const idx = dadosGraficoLinha.quantidades.indexOf(maiorQtd);
+                    if (idx !== -1) horarioPico = dadosGraficoLinha.horas[idx] || 'N/A';
+                }
+            }
+
+            const metade = Math.ceil(tiposOcorrencias.length / 2);
+            const tiposPrimeiraColuna = tiposOcorrencias.slice(0, metade);
+            const tiposSegundaColuna = tiposOcorrencias.slice(metade);
+
+            const camerasOrdenadas = [...camerasData].sort((a, b) => (b.total || 0) - (a.total || 0));
+
+            const intervalosComOcorrencias = [];
+            if (dadosGraficoLinha?.horas && dadosGraficoLinha.quantidades) {
+                dadosGraficoLinha.horas.forEach((hora, i) => {
+                    const qtd = dadosGraficoLinha.quantidades[i];
+                    if (qtd > 0) intervalosComOcorrencias.push({ horario: hora, quantidade: qtd });
+                });
+                intervalosComOcorrencias.sort((a, b) => b.quantidade - a.quantidade);
+            }
+
+            const ultimasOcorrencias = (ocorrencias || []).slice(0, 8);
+            const totalHoje = metricasGerais?.totalHoje || 0;
+            const mediaDiaria = metricasGerais?.mediaDiaria || 0;
+            const taxaConformidade = 93.52;
+
+            // ── Gerar e baixar PDF ──────────────────────────────────────────
+            const blob = await pdf(
+                <RelatorioPDF
+                    totalHoje={totalHoje}
+                    mediaDiaria={mediaDiaria}
+                    taxaConformidade={taxaConformidade}
+                    epiMaisNegligenciadoText={epiMaisNegligenciadoText}
+                    cameraMaiorIncidencia={cameraMaiorIncidencia}
+                    horarioPico={horarioPico}
+                    tiposPrimeiraColuna={tiposPrimeiraColuna}
+                    tiposSegundaColuna={tiposSegundaColuna}
+                    camerasOrdenadas={camerasOrdenadas}
+                    intervalosComOcorrencias={intervalosComOcorrencias}
+                    ultimasOcorrencias={ultimasOcorrencias}
+                    formatarDataHora={formatarDataHora}
+                />
+            ).toBlob();
+
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `relatorio_sims_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`;
+            link.click();
+            URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+        } finally {
+            setGerandoPDF(false);
+        }
+    };
+
+    const desabilitado = carregandoDados || gerandoPDF;
 
     return (
         <button
             onClick={gerarRelatorioPDF}
+            className="botaoExportarPDF"
+            disabled={desabilitado}
+            style={{
+                backgroundColor: '#0A1E3F',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                cursor: desabilitado ? 'not-allowed' : 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                transition: 'background-color 0.2s',
+                opacity: desabilitado ? 0.6 : 1,
+            }}
+            onMouseEnter={(e) => { if (!desabilitado) e.target.style.backgroundColor = '#1a2e4f'; }}
+            onMouseLeave={(e) => { if (!desabilitado) e.target.style.backgroundColor = '#0A1E3F'; }}
         >
-            Exportar Relatório PDF
+            {gerandoPDF ? '⏳ Gerando PDF...' : carregandoDados ? '📊 Carregando dados...' : '📄 Gerar Relatório'}
         </button>
     );
 };
