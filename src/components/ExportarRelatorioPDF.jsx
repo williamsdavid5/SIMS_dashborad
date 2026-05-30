@@ -4,13 +4,14 @@
 import { useApp } from '../context/AppContext';
 import { useState, useEffect } from 'react';
 import { pdf, Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/renderer';
+import bwipjs from 'bwip-js';
 
 import SIMSLogo from '../assets/sims_horizontal.png'
 import VIICLogo from '../assets/viic_logo_azul.png'
 
 // ─── Paleta de cores ──────────────────────────────────────────────────────────
 const COR_AZUL = '#0A1E3F';
-const COR_FUNDO = '#F4F4FF';
+const COR_FUNDO = '#FFFFFF';
 const COR_BADGE = '#D4DBED';
 const COR_CINZA = '#a7abb5';
 const COR_TEXTO = '#333333';
@@ -128,6 +129,23 @@ const s = StyleSheet.create({
         paddingLeft: 12,
         marginBottom: 5,
     },
+
+    //Rodape
+    rodape: {
+        position: 'absolute',
+        bottom: 28,
+        right: 48,
+        alignItems: 'flex-end',
+    },
+    codigoTexto: {
+        fontSize: 7,
+        color: COR_CINZA,
+        marginBottom: 3,
+    },
+    codigoBarras: {
+        width: 100,
+        height: 40,
+    },
 });
 
 // ─── Componentes auxiliares ───────────────────────────────────────────────────
@@ -163,6 +181,8 @@ const RelatorioPDF = ({
     intervalosComOcorrencias,
     ultimasOcorrencias,
     formatarDataHora,
+    codigoAleatorio,
+    codigoBarrasPng,
 }) => (
     <Document>
         <Page size="A4" style={s.page}>
@@ -251,6 +271,10 @@ const RelatorioPDF = ({
                 ))}
             </Secao> */}
 
+            <View style={s.rodape}>
+                <Text style={s.codigoTexto}>{codigoAleatorio}</Text>
+                <Image src={codigoBarrasPng} style={s.codigoBarras} />
+            </View>
         </Page>
     </Document>
 );
@@ -358,6 +382,26 @@ const ExportarRelatorioPDF = () => {
             const mediaDiaria = metricasGerais?.mediaDiaria || 0;
             const taxaConformidade = 93.52;
 
+            // Gerar código aleatório
+            const codigoAleatorio = `SIMS-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+            // Converter para PNG base64 via canvas
+            const codigoBarrasPng = await new Promise((resolve, reject) => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    bwipjs.toCanvas(canvas, {
+                        bcid: 'code128',
+                        text: codigoAleatorio,
+                        scale: 3,
+                        height: 10,
+                        includetext: false,
+                    });
+                    resolve(canvas.toDataURL('image/png'));
+                } catch (err) {
+                    reject(err);
+                }
+            });
+
             // ── Gerar e baixar PDF ──────────────────────────────────────────
             const blob = await pdf(
                 <RelatorioPDF
@@ -373,6 +417,8 @@ const ExportarRelatorioPDF = () => {
                     intervalosComOcorrencias={intervalosComOcorrencias}
                     ultimasOcorrencias={ultimasOcorrencias}
                     formatarDataHora={formatarDataHora}
+                    codigoAleatorio={codigoAleatorio}
+                    codigoBarrasPng={codigoBarrasPng}
                 />
             ).toBlob();
 
