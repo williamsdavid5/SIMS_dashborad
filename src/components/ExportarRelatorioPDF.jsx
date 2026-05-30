@@ -6,6 +6,14 @@ import { useState, useEffect } from 'react';
 import { pdf, Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/renderer';
 import bwipjs from 'bwip-js';
 
+import html2canvas from 'html2canvas';
+import { createRoot } from 'react-dom/client';
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+    LineChart, Line,
+    PieChart, Pie, Cell, Legend
+} from 'recharts';
+
 import SIMSLogo from '../assets/sims_horizontal.png'
 import VIICLogo from '../assets/viic_logo_azul.png'
 
@@ -26,6 +34,23 @@ const s = StyleSheet.create({
         fontFamily: 'Helvetica',
     },
 
+    //graficos
+    grafico: {
+        width: '100%',
+        height: 170,
+        marginTop: 6,
+    },
+    graficoPie: {
+        width: '70%',
+        height: 150,
+        marginTop: 6,
+    },
+    graficoText: {
+        fontSize: 11,
+        color: '#444444',
+        marginTop: 15,
+        fontWeight: 'Bold'
+    },
     // Header
     header: {
         alignItems: 'center',
@@ -68,12 +93,17 @@ const s = StyleSheet.create({
         marginBottom: 10,
     },
     logo: {
-        height: 28,
+        height: 20,
         objectFit: 'contain',
     },
     logo2: {
-        height: 24,
+        height: 16,
         objectFit: 'contain',
+    },
+    logoView: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5
     },
 
     // Seções
@@ -166,6 +196,36 @@ const Secao = ({ titulo, descricao, children }) => (
     </View>
 );
 
+const capturarGraficoComoPng = (componenteJSX, largura = 500, altura = 220) => {
+    return new Promise((resolve, reject) => {
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: absolute; top: -9999px; left: -9999px;
+            width: ${largura}px; height: ${altura}px;
+            background-color: #FFFFFF;
+        `;
+        document.body.appendChild(container);
+        const root = createRoot(container);
+        root.render(componenteJSX);
+
+        setTimeout(async () => {
+            try {
+                const canvas = await html2canvas(container, {
+                    scale: 2,
+                    backgroundColor: '#FFFFFF',
+                    logging: false,
+                });
+                resolve(canvas.toDataURL('image/png'));
+            } catch (err) {
+                reject(err);
+            } finally {
+                root.unmount();
+                document.body.removeChild(container);
+            }
+        }, 400);
+    });
+};
+
 // ─── Documento PDF ────────────────────────────────────────────────────────────
 
 const RelatorioPDF = ({
@@ -183,6 +243,9 @@ const RelatorioPDF = ({
     formatarDataHora,
     codigoAleatorio,
     codigoBarrasPng,
+    graficoPng,
+    graficoPiePng,
+    graficoBarraPng,
 }) => (
     <Document>
         <Page size="A4" style={s.page}>
@@ -190,9 +253,16 @@ const RelatorioPDF = ({
             {/* Header */}
             <View style={s.header}>
                 <View style={s.headerLogos}>
-                    <Image src={SIMSLogo} style={s.logo2} />
-                    <Image src={VIICLogo} style={s.logo} />
+                    <View style={s.logoView}>
+                        <Image src={SIMSLogo} style={s.logo2} />
+                        <Image src={VIICLogo} style={s.logo} />
+                    </View>
+                    <View>
+                        <Text style={s.codigoTexto}>{codigoAleatorio}</Text>
+                        <Image src={codigoBarrasPng} style={s.codigoBarras} />
+                    </View>
                 </View>
+
                 <Text style={s.headerTitulo}>Relatório SIMS</Text>
                 <Text style={s.headerSubtitulo}>Sistema Inteligente de Monitoramento e Segurança</Text>
                 <Text style={s.headerResumo}>Resumo de detecções de EPI</Text>
@@ -236,6 +306,10 @@ const RelatorioPDF = ({
                         ))}
                     </View>
                 </View>
+                <Text style={s.graficoText}>
+                    Visualização gráfica:
+                </Text>
+                <Image src={graficoBarraPng} style={s.grafico} />
             </Secao>
 
             {/* Detecções por câmera */}
@@ -246,6 +320,15 @@ const RelatorioPDF = ({
                 {camerasOrdenadas.map((camera, i) => (
                     <Linha key={i} label={`${camera.camera}:`} valor={String(camera.total)} />
                 ))}
+                <View>
+                    <Text style={s.graficoText}>
+                        Visualização gráfica:
+                    </Text>
+                    <View style={s.header}>
+                        <Image src={graficoPiePng} style={s.graficoPie} />
+                    </View>
+                </View>
+
             </Secao>
 
             {/* Detecções por intervalo */}
@@ -259,6 +342,10 @@ const RelatorioPDF = ({
                 {intervalosComOcorrencias.slice(0, 6).map((item, i) => (
                     <Linha key={i} label={`${item.horario} -`} valor={`${item.quantidade} ocorrências`} />
                 ))}
+                <Text style={s.graficoText}>
+                    Visualização gráfica:
+                </Text>
+                <Image src={graficoPng} style={s.grafico} />
             </Secao>
 
             {/* Últimas Ocorrências */}
@@ -402,6 +489,54 @@ const ExportarRelatorioPDF = () => {
                 }
             });
 
+            // Preparar dados (mesmo formato do Dashboard)
+            const dadosLinha = dadosGraficoLinha?.horas?.map((hora, i) => ({
+                hora,
+                quantidade: dadosGraficoLinha.quantidades[i] || 0,
+            })) || [];
+
+            const distribuicaoPorCameraData = dadosGraficoCameras?.dadosCompletos?.map(item => ({
+                camera: item.camera,
+                Quantidade: Number(item.total),
+            })) || [];
+
+            // Paleta de azuis para o PieChart (mesma lógica do Dashboard)
+            const coresPie = distribuicaoPorCameraData.map((_, i) => {
+                const lightness = 20 + (i * 50 / Math.max(distribuicaoPorCameraData.length - 1, 1));
+                return `hsl(214, 68%, ${lightness}%)`;
+            });
+
+            const [graficoPng, graficoPiePng, graficoBarraPng] = await Promise.all([
+                capturarGraficoComoPng(
+                    <LineChart width={500} height={220} data={dadosLinha}>
+                        <XAxis dataKey="hora" tick={{ fontSize: 10 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="quantidade" stroke="#0A1E3F" strokeWidth={3} dot={false} isAnimationActive={false} />
+                    </LineChart>
+                ),
+                capturarGraficoComoPng(
+                    <PieChart width={500} height={220}>
+                        <Pie data={distribuicaoPorCameraData} dataKey="Quantidade" nameKey="camera" cx="50%" cy="50%" outerRadius={80} isAnimationActive={false}>
+                            {distribuicaoPorCameraData.map((_, i) => (
+                                <Cell key={i} fill={coresPie[i]} />
+                            ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                    </PieChart>
+                ),
+                capturarGraficoComoPng(
+                    <BarChart width={500} height={220} data={dadosGraficoTipoOcorrencia}>
+                        <CartesianGrid strokeDasharray="1 1" />
+                        <XAxis dataKey="epi" tick={{ fontSize: 10 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
+                        <Tooltip />
+                        <Bar dataKey="total" fill="#0A1E3F" isAnimationActive={false} />
+                    </BarChart>
+                ),
+            ]);
+
             // ── Gerar e baixar PDF ──────────────────────────────────────────
             const blob = await pdf(
                 <RelatorioPDF
@@ -419,6 +554,9 @@ const ExportarRelatorioPDF = () => {
                     formatarDataHora={formatarDataHora}
                     codigoAleatorio={codigoAleatorio}
                     codigoBarrasPng={codigoBarrasPng}
+                    graficoPng={graficoPng}
+                    graficoPiePng={graficoPiePng}
+                    graficoBarraPng={graficoBarraPng}
                 />
             ).toBlob();
 
