@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { pdf, Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/renderer';
 import bwipjs from 'bwip-js';
 
+import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 import { createRoot } from 'react-dom/client';
 import {
@@ -229,6 +230,7 @@ const capturarGraficoComoPng = (componenteJSX, largura = 500, altura = 220) => {
 // ─── Documento PDF ────────────────────────────────────────────────────────────
 
 const RelatorioPDF = ({
+    incluirGraficos,
     totalHoje,
     mediaDiaria,
     taxaConformidade,
@@ -268,7 +270,7 @@ const RelatorioPDF = ({
                 <Text style={s.headerResumo}>Resumo de detecções de EPI</Text>
                 <View style={s.badge}>
                     <Text style={s.badgeTexto}>
-                        Emitido em: {new Date().toLocaleDateString('pt-BR')}
+                        Emitido em: {new Date().toLocaleDateString('pt-BR')} - {new Date().toLocaleTimeString('pt-BR')}
                     </Text>
                 </View>
             </View>
@@ -306,10 +308,15 @@ const RelatorioPDF = ({
                         ))}
                     </View>
                 </View>
-                <Text style={s.graficoText}>
-                    Visualização gráfica:
-                </Text>
-                <Image src={graficoBarraPng} style={s.grafico} />
+                {incluirGraficos && (
+                    <>
+                        <Text style={s.graficoText}>
+                            Visualização gráfica:
+                        </Text>
+                        <Image src={graficoBarraPng} style={s.grafico} />
+                    </>
+                )}
+
             </Secao>
 
             {/* Detecções por câmera */}
@@ -320,14 +327,16 @@ const RelatorioPDF = ({
                 {camerasOrdenadas.map((camera, i) => (
                     <Linha key={i} label={`${camera.camera}:`} valor={String(camera.total)} />
                 ))}
-                <View>
-                    <Text style={s.graficoText}>
-                        Visualização gráfica:
-                    </Text>
-                    <View style={s.header}>
-                        <Image src={graficoPiePng} style={s.graficoPie} />
-                    </View>
-                </View>
+                {incluirGraficos && (
+                    <>
+                        <Text style={s.graficoText}>
+                            Visualização gráfica:
+                        </Text>
+                        <View style={s.header}>
+                            <Image src={graficoPiePng} style={s.graficoPie} />
+                        </View>
+                    </>
+                )}
 
             </Secao>
 
@@ -342,10 +351,15 @@ const RelatorioPDF = ({
                 {intervalosComOcorrencias.slice(0, 6).map((item, i) => (
                     <Linha key={i} label={`${item.horario} -`} valor={`${item.quantidade} ocorrências`} />
                 ))}
-                <Text style={s.graficoText}>
-                    Visualização gráfica:
-                </Text>
-                <Image src={graficoPng} style={s.grafico} />
+                {incluirGraficos && (
+                    <>
+                        <Text style={s.graficoText}>
+                            Visualização gráfica:
+                        </Text>
+                        <Image src={graficoPng} style={s.grafico} />
+                    </>
+                )}
+
             </Secao>
 
             {/* Últimas Ocorrências */}
@@ -368,7 +382,7 @@ const RelatorioPDF = ({
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
-const ExportarRelatorioPDF = () => {
+const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf' }) => {
     const {
         ocorrencias,
         fetchOcorrencias,
@@ -416,14 +430,63 @@ const ExportarRelatorioPDF = () => {
         }
     };
 
-    const gerarRelatorioPDF = async () => {
+    // ── Gerador CSV ───────────────────────────────────────────────────────────
+    const gerarCSV = () => {
+        const cabecalho = ['Data/Hora', 'Câmera', 'EPI', 'Tipo', 'Status'];
+        const linhas = ocorrencias.map(occ => [
+            formatarDataHora(occ.data_hora),
+            occ.camera,
+            occ.epi,
+            occ.tipo,
+            occ.status,
+        ]);
 
-        carregarDados();
+        const conteudo = [cabecalho, ...linhas]
+            .map(linha => linha.map(cel => `"${String(cel ?? '').replace(/"/g, '""')}"`).join(','))
+            .join('\n');
 
+        const blob = new Blob(['\uFEFF' + conteudo], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
+    // ── Gerador Excel ─────────────────────────────────────────────────────────
+    const gerarExcel = () => {
+        const dados = ocorrencias.map(occ => ({
+            'Data/Hora': formatarDataHora(occ.data_hora),
+            'Câmera': occ.camera,
+            'EPI': occ.epi,
+            'Tipo': occ.tipo,
+            'Status': occ.status,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(dados);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Ocorrências');
+        XLSX.writeFile(workbook, `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    };
+
+    // ── Orquestrador ──────────────────────────────────────────────────────────
+    const gerarRelatorio = async () => {
         if (gerandoPDF) return;
         setGerandoPDF(true);
 
         try {
+            await carregarDados();
+
+            if (tipoRelatorio === 'csv') {
+                gerarCSV();
+                return;
+            }
+
+            if (tipoRelatorio === 'excel') {
+                gerarExcel();
+                return;
+            }
             // ── Calcular dados ──────────────────────────────────────────────
             const tiposOcorrencias = dadosGraficoTipoOcorrencia || [];
 
@@ -540,6 +603,7 @@ const ExportarRelatorioPDF = () => {
             // ── Gerar e baixar PDF ──────────────────────────────────────────
             const blob = await pdf(
                 <RelatorioPDF
+                    incluirGraficos={incluirGraficos}
                     totalHoje={totalHoje}
                     mediaDiaria={mediaDiaria}
                     taxaConformidade={taxaConformidade}
@@ -574,11 +638,17 @@ const ExportarRelatorioPDF = () => {
         }
     };
 
+    const labelBotao = {
+        pdf: 'Gerar PDF',
+        csv: 'Gerar CSV',
+        excel: 'Gerar Excel',
+    }[tipoRelatorio] ?? 'Gerar Relatório';
+
     const desabilitado = carregandoDados || gerandoPDF;
 
     return (
         <button
-            onClick={gerarRelatorioPDF}
+            onClick={gerarRelatorio}
             className="botaoExportarPDF"
             disabled={desabilitado}
             style={{
@@ -596,7 +666,7 @@ const ExportarRelatorioPDF = () => {
             onMouseEnter={(e) => { if (!desabilitado) e.target.style.backgroundColor = '#1a2e4f'; }}
             onMouseLeave={(e) => { if (!desabilitado) e.target.style.backgroundColor = '#0A1E3F'; }}
         >
-            {gerandoPDF ? 'Gerando PDF...' : carregandoDados ? 'Gerando PDF...' : 'Gerar Relatório'}
+            {gerandoPDF ? 'Gerando...' : labelBotao}
         </button>
     );
 };

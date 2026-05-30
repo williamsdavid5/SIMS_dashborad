@@ -7,6 +7,8 @@ export default function EmissaoRelatorios() {
 
     const [dataFiltroInicio, setDataFiltroInicio] = useState("");
     const [dataFiltroFim, setDataFiltroFim] = useState("");
+    const [incluirGraficos, setIncluirGraficos] = useState(false);
+    const [tipoRelatorio, setTipoRelatorio] = useState('pdf')
 
     function handleChange(e, setE) {
         let input = e.target.value.replace(/\D/g, "");
@@ -278,21 +280,23 @@ export default function EmissaoRelatorios() {
                         <p>Aqui você pode gerar relatórios personalizados que auxiliam na tomada de decisão, no acompanhamento de conformidades e na identificação de tendências de segurança. Os relatórios disponíveis permitem desde análises executivas rápidas até detalhamentos específicos por setor, garantindo que gestores e equipes tenham acesso às informações necessárias para fortalecer a cultura de segurança e reduzir riscos operacionais.</p>
                         <hr />
                         <p>Formato</p>
-                        <select name="" id="">
-                            <option value="">PDF</option>
-                            <option value="">Excel</option>
-                            <option value="">CSV</option>
+                        <select name="" id="" value={tipoRelatorio} onChange={(e) => setTipoRelatorio(e.target.value)}>
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
                         </select>
-                        <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
-                            <label htmlFor="">
-                                <input type="checkbox" name="" id="" />
-                                Incluir gráficos
-                            </label>
-                        </span>
+                        {tipoRelatorio == 'pdf' && (
+                            <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
+                                <label htmlFor="">
+                                    <input type="checkbox" name="" id="" checked={incluirGraficos} onChange={(e) => setIncluirGraficos(e.target.checked)} />
+                                    Incluir gráficos
+                                </label>
+                            </span>
+                        )}
                         {/* <button onClick={() => gerarPDF()}>
                             Gerar
                         </button> */}
-                        <ExportarRelatorioPDF />
+                        <ExportarRelatorioPDF incluirGraficos={incluirGraficos} tipoRelatorio={tipoRelatorio} />
                     </div>
                     <div className="janelaHistoricoRelatorio">
                         <h2>Última emissões</h2>
