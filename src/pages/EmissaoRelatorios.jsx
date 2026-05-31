@@ -307,6 +307,11 @@ export default function EmissaoRelatorios() {
                             <option value="excel">Excel</option>
                             <option value="csv">CSV</option>
                         </select>
+                        {tipoRelatorio != 'pdf' && (
+                            <>
+                                <p><b>Atenção:</b> relatórios do tipo <b>{tipoRelatorio}</b> retornam apenas o histórico.</p>
+                            </>
+                        )}
                         {tipoRelatorio == 'pdf' && (
                             <>
                                 <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
@@ -323,7 +328,7 @@ export default function EmissaoRelatorios() {
                                 </span>
                             </>
                         )}
-                        {incluirHistorico && (
+                        {((incluirHistorico) || (tipoRelatorio != 'pdf')) && (
                             <>
                                 <select name="" id="" value={historicoTipo} onChange={(e) => setHistoricoTipo(e.target.value)}>
                                     <option value="hoje">
@@ -333,27 +338,27 @@ export default function EmissaoRelatorios() {
                                         Histórico por período
                                     </option>
                                 </select>
-                            </>
-                        )}
-                        {historicoTipo === 'periodo' && (
-                            <>
-                                <span className="dataPeriodo">
-                                    <input
-                                        type="text"
-                                        placeholder="DD/MM/AAAA"
-                                        value={dataFiltroInicio}
-                                        onChange={(e) => handleChange(e, setDataFiltroInicio, setDataInicioISO)}
-                                        maxLength={10}
-                                    />
-                                    <p>a</p>
-                                    <input
-                                        type="text"
-                                        placeholder="DD/MM/AAAA"
-                                        value={dataFiltroFim}
-                                        onChange={(e) => handleChange(e, setDataFiltroFim, setDataFimISO)}
-                                        maxLength={10}
-                                    />
-                                </span>
+                                {historicoTipo == 'periodo' && (
+                                    <>
+                                        <span className="dataPeriodo">
+                                            <input
+                                                type="text"
+                                                placeholder="DD/MM/AAAA"
+                                                value={dataFiltroInicio}
+                                                onChange={(e) => handleChange(e, setDataFiltroInicio, setDataInicioISO)}
+                                                maxLength={10}
+                                            />
+                                            <p>a</p>
+                                            <input
+                                                type="text"
+                                                placeholder="DD/MM/AAAA"
+                                                value={dataFiltroFim}
+                                                onChange={(e) => handleChange(e, setDataFiltroFim, setDataFimISO)}
+                                                maxLength={10}
+                                            />
+                                        </span>
+                                    </>
+                                )}
                             </>
                         )}
                         {/* <button onClick={() => gerarPDF()}>

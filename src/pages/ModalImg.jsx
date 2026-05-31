@@ -3,9 +3,6 @@ import ImagemExemplo from '../assets/cameraImagemExemplo.jpg'
 import { useEffect } from 'react'
 
 export default function ModalImg({ setModalImagem, dadosOcorrencia }) {
-    useEffect(() => {
-        console.log(dadosOcorrencia);
-    }, dadosOcorrencia)
 
     const formatarData = (dataISO) => {
         const data = new Date(dataISO);

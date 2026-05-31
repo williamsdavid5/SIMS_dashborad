@@ -560,7 +560,11 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
             ]);
 
             let periodoResult = null;
-            if (dataInicioParam && dataFimParam && incluirHistorico) {
+
+            const deveBuscarPeriodo = dataInicioParam && dataFimParam &&
+                (incluirHistorico || tipoRelatorio === 'csv' || tipoRelatorio === 'excel');
+
+            if (deveBuscarPeriodo) {
                 periodoResult = await fetchOcorrenciasPorPeriodo(dataInicioParam, dataFimParam);
                 setDadosPeriodo(periodoResult);
             } else {
@@ -601,9 +605,9 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
     };
 
     // ── Gerador CSV ───────────────────────────────────────────────────────────
-    const gerarCSV = () => {
+    const gerarCSV = (dadosOcorrencias) => {
         const cabecalho = ['Data/Hora', 'Câmera', 'EPI', 'Tipo', 'Status'];
-        const linhas = ocorrencias.map(occ => [
+        const linhas = dadosOcorrencias.map(occ => [
             formatarDataHora(occ.data_hora),
             occ.camera,
             occ.epi,
@@ -625,8 +629,8 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
     };
 
     // ── Gerador Excel ─────────────────────────────────────────────────────────
-    const gerarExcel = () => {
-        const dados = ocorrencias.map(occ => ({
+    const gerarExcel = (dadosOcorrencias) => {
+        const dados = dadosOcorrencias.map(occ => ({
             'Data/Hora': formatarDataHora(occ.data_hora),
             'Câmera': occ.camera,
             'EPI': occ.epi,
@@ -653,7 +657,6 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
                 const hoje = new Date().toISOString().split('T')[0];
                 dataInicioFinal = hoje;
                 dataFimFinal = hoje;
-                console.log("Usando data atual para histórico:", hoje);
             }
 
             // Pegar os dados diretamente da função
@@ -685,19 +688,25 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
             let totalRegistrosPeriodo = 0;
             let todasOcorrenciasPeriodo = [];
 
-            if (incluirHistorico && dadosCarregados?.periodo) {
+            // Para CSV e Excel, o histórico é obrigatório (sempre usa dados do período)
+            const usarHistorico = incluirHistorico || tipoRelatorio === 'csv' || tipoRelatorio === 'excel';
+
+            if (usarHistorico && dadosCarregados?.periodo) {
                 ocorrenciasPeriodo = dadosCarregados.periodo.ocorrencias || [];
                 totalRegistrosPeriodo = dadosCarregados.periodo.total_registros || 0;
                 todasOcorrenciasPeriodo = ocorrenciasPeriodo;
             }
 
+            // ── Gerar CSV ou Excel (usando dados do período) ─────────────────────────
             if (tipoRelatorio === 'csv') {
-                gerarCSV();
+                const dadosParaExportar = usarHistorico ? ocorrenciasPeriodo : ocorrenciasGerais;
+                gerarCSV(dadosParaExportar);
                 return;
             }
 
             if (tipoRelatorio === 'excel') {
-                gerarExcel();
+                const dadosParaExportar = usarHistorico ? ocorrenciasPeriodo : ocorrenciasGerais;
+                gerarExcel(dadosParaExportar);
                 return;
             }
 
