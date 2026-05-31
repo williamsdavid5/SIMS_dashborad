@@ -23,7 +23,7 @@ export default function ModalImg({ setModalImagem, dadosOcorrencia }) {
                         <button onClick={() => setModalImagem(false)} className='botaoFecharModal'>Fechar</button>
                     </div>
                     <div className='auxImagem'>
-                        <img src={ImagemExemplo} alt="" />
+                        <img src={dadosOcorrencia.imagem} alt="" />
                     </div>
                 </main>
             </div>

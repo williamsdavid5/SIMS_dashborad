@@ -315,19 +315,30 @@ export default function Dashboard() {
                                                     <td>{formatarData(ocorrencia.data_hora)}</td>
                                                     <td>{ocorrencia.camera}</td>
                                                     <td>{ocorrencia.epi}</td>
-                                                    <td>
-                                                        <button
-                                                            className='botaoVerImagem'
-                                                            onClick={() => {
-                                                                setModalImagem(true)
-                                                                setDadosOcorrencia({
-                                                                    data: ocorrencia.data_hora,
-                                                                    camera: ocorrencia.camera,
-                                                                    item: ocorrencia.epi
-                                                                })
-                                                            }}
-                                                        >Ver</button>
-                                                    </td>
+                                                    {ocorrencia.url_imagem ? (
+                                                        <td>
+                                                            <button
+                                                                className='botaoVerImagem'
+                                                                onClick={() => {
+                                                                    setModalImagem(true)
+                                                                    setDadosOcorrencia({
+                                                                        data: ocorrencia.data_hora,
+                                                                        camera: ocorrencia.camera,
+                                                                        item: ocorrencia.epi,
+                                                                        imagem: ocorrencia.url_imagem
+                                                                    })
+                                                                }}
+                                                            >Ver</button>
+                                                        </td>
+                                                    )
+                                                        :
+                                                        <>
+                                                            <td>
+                                                                <p>Sem captura</p>
+                                                            </td>
+                                                        </>
+
+                                                    }
                                                     <td>{ocorrencia.tipo}</td>
                                                     <td>
                                                         <p className={ocorrencia.status == 'Em análise' ? 'analise' : ocorrencia.status == 'Não confirmado' ? 'naoConfirmado' : ocorrencia.status == 'Confirmado' ? 'confirmado' : ''}>
