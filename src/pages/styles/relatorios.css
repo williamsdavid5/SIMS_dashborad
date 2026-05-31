@@ -93,6 +93,16 @@
     padding: 2px;
 }
 
+.dataPeriodo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dataPeriodo input {
+    background-color: white;
+}
+
 /* 
 @media (max-width: 1200px) {
     .tabelaHistoricoRelatorio {
@@ -128,4 +138,9 @@
     .auxiliarPeriodoRelatorio {
         flex-direction: column;
     }
+
+    .dataPeriodo input {
+        min-width: 0;
+    }
+
 }

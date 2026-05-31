@@ -64,7 +64,9 @@ export default function Dashboard() {
         metricasGerais,
         fetchMetricasGerais,
         dadosGraficoCameras,
-        fetchGraficoCameras
+        fetchGraficoCameras,
+        conformidade,
+        fetchConformidade
     } = useApp();
 
     async function carregarDadosCompletos() {
@@ -73,7 +75,8 @@ export default function Dashboard() {
             fetchGraficoTipos(),
             fetchGraficoLinha(),
             fetchMetricasGerais(),
-            fetchGraficoCameras()
+            fetchGraficoCameras(),
+            fetchConformidade()
         ]);
     }
 
@@ -213,7 +216,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className='bloco infoNumerica'>
                                     <p className='tituloBloco'>Taxa de conformidade</p>
-                                    <h1>{taxaConformidade}%</h1>
+                                    <h1>{conformidade}%</h1>
                                 </div>
                                 <div className='bloco infoNumerica cameraCritica'>
                                     <p className='tituloBloco'>Câmera crítica</p>

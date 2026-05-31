@@ -9,8 +9,16 @@ export default function EmissaoRelatorios() {
     const [dataFiltroFim, setDataFiltroFim] = useState("");
     const [incluirGraficos, setIncluirGraficos] = useState(false);
     const [tipoRelatorio, setTipoRelatorio] = useState('pdf')
+    const [incluirHistorico, setIncluirHistorico] = useState(false);
+    const [historicoTipo, setHistoricoTipo] = useState('hoje');
+    const [dataInicio, setDataInicio] = useState(null);
+    const [dataFim, setDataFim] = useState(null);
 
-    function handleChange(e, setE) {
+    const hojeISO = new Date().toISOString().split("T")[0];
+    const [dataInicioISO, setDataInicioISO] = useState(hojeISO);
+    const [dataFimISO, setDataFimISO] = useState(hojeISO);
+
+    function handleChange(e, setDataVisual, setDataISO) {
         let input = e.target.value.replace(/\D/g, "");
         if (input.length > 8) input = input.slice(0, 8);
 
@@ -20,7 +28,14 @@ export default function EmissaoRelatorios() {
             input = input.replace(/(\d{2})(\d{1,2})/, "$1/$2");
         }
 
-        setE(input);
+        setDataVisual(input);
+
+        if (input.length === 10) {
+            const dataISO = converterParaISO(input);
+            setDataISO(dataISO);
+        } else {
+            setDataISO("");
+        }
     };
 
     const dadosRelatorios = [
@@ -270,6 +285,13 @@ export default function EmissaoRelatorios() {
         return data.toLocaleString("pt-BR");
     };
 
+    const converterParaISO = (dataBR) => {
+        if (!dataBR || dataBR.length < 10) return "";
+        const partes = dataBR.split("/");
+        if (partes.length !== 3) return "";
+        return `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+    };
+
     return (
         <>
             <main className="dashboardMain relatoriosMain">
@@ -286,17 +308,65 @@ export default function EmissaoRelatorios() {
                             <option value="csv">CSV</option>
                         </select>
                         {tipoRelatorio == 'pdf' && (
-                            <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
-                                <label htmlFor="">
-                                    <input type="checkbox" name="" id="" checked={incluirGraficos} onChange={(e) => setIncluirGraficos(e.target.checked)} />
-                                    Incluir gráficos
-                                </label>
-                            </span>
+                            <>
+                                <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
+                                    <label htmlFor="">
+                                        <input type="checkbox" name="" id="" checked={incluirGraficos} onChange={(e) => setIncluirGraficos(e.target.checked)} />
+                                        Incluir gráficos
+                                    </label>
+                                </span>
+                                <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
+                                    <label htmlFor="">
+                                        <input type="checkbox" name="" id="" checked={incluirHistorico} onChange={(e) => setIncluirHistorico(e.target.checked)} />
+                                        Incluir histórico
+                                    </label>
+                                </span>
+                            </>
+                        )}
+                        {incluirHistorico && (
+                            <>
+                                <select name="" id="" value={historicoTipo} onChange={(e) => setHistoricoTipo(e.target.value)}>
+                                    <option value="hoje">
+                                        Histórico para hoje
+                                    </option>
+                                    <option value="periodo">
+                                        Histórico por período
+                                    </option>
+                                </select>
+                            </>
+                        )}
+                        {historicoTipo === 'periodo' && (
+                            <>
+                                <span className="dataPeriodo">
+                                    <input
+                                        type="text"
+                                        placeholder="DD/MM/AAAA"
+                                        value={dataFiltroInicio}
+                                        onChange={(e) => handleChange(e, setDataFiltroInicio, setDataInicioISO)}
+                                        maxLength={10}
+                                    />
+                                    <p>a</p>
+                                    <input
+                                        type="text"
+                                        placeholder="DD/MM/AAAA"
+                                        value={dataFiltroFim}
+                                        onChange={(e) => handleChange(e, setDataFiltroFim, setDataFimISO)}
+                                        maxLength={10}
+                                    />
+                                </span>
+                            </>
                         )}
                         {/* <button onClick={() => gerarPDF()}>
                             Gerar
                         </button> */}
-                        <ExportarRelatorioPDF incluirGraficos={incluirGraficos} tipoRelatorio={tipoRelatorio} />
+                        <ExportarRelatorioPDF
+                            key={`${dataInicioISO}-${dataFimISO}-${incluirHistorico}`}
+                            incluirGraficos={incluirGraficos}
+                            tipoRelatorio={tipoRelatorio}
+                            dataInicio={dataInicioISO}
+                            dataFim={dataFimISO}
+                            incluirHistorico={incluirHistorico}
+                        />
                     </div>
                     <div className="janelaHistoricoRelatorio">
                         <h2>Última emissões</h2>

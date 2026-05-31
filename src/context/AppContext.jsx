@@ -9,6 +9,8 @@ export function AppProvider({ children }) {
     const [temMais, setTemMais] = useState(true);
     const [carregando, setCarregando] = useState(false);
     const [dadosGraficoTipoOcorrencia, setDadosGraficoTipoOcorrencia,] = useState([]);
+    const [conformidade, setConformidade] = useState(0);
+    const [ocorrenciasPorPeriodo, setOcorrenciasPorPeriodo] = useState([]);
 
     const [dadosGraficoLinha, setDadosGraficoLinha] = useState({
         horas: [],
@@ -146,6 +148,37 @@ export function AppProvider({ children }) {
         }
     }, []);
 
+    const fetchConformidade = useCallback(async () => {
+        try {
+            const response = await api.get('/conformidade');
+            const valorDouble = response.data.taxaConformidade;
+            setConformidade(valorDouble);
+            return valorDouble;
+        } catch (err) {
+            console.error("Erro ao buscar conformidade:", err);
+            return 0;
+        }
+    }, []);
+
+    const fetchOcorrenciasPorPeriodo = useCallback(async (dataInicio, dataFim) => {
+        try {
+            const response = await api.get('/ocorrencias-por-periodo', {
+                params: {
+                    dataInicio: dataInicio,
+                    dataFim: dataFim
+                }
+            });
+
+            const dadosFiltrados = response.data;
+            setOcorrenciasPorPeriodo(dadosFiltrados);
+            return dadosFiltrados;
+
+        } catch (err) {
+            console.error("Erro ao buscar ocorrências por período:", err);
+            return [];
+        }
+    }, []);
+
     return (
         <AppContext.Provider
             value={{
@@ -161,7 +194,11 @@ export function AppProvider({ children }) {
                 metricasGerais,
                 fetchMetricasGerais,
                 dadosGraficoCameras,
-                fetchGraficoCameras
+                fetchGraficoCameras,
+                conformidade,
+                fetchConformidade,
+                ocorrenciasPorPeriodo,
+                fetchOcorrenciasPorPeriodo
             }}
         >
             {children}
