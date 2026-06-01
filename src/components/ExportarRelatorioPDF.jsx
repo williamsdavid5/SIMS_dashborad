@@ -70,7 +70,8 @@ const s = StyleSheet.create({
     headerResumo: {
         fontSize: 11,
         color: COR_TEXTO,
-        marginTop: 2,
+        marginTop: 5,
+        marginBottom: 5
     },
     badge: {
         marginTop: 8,
@@ -85,6 +86,12 @@ const s = StyleSheet.create({
         fontSize: 12,
         color: COR_AZUL,
         fontFamily: 'Helvetica-Bold',
+    },
+    nomeResponsavel: {
+        fontSize: 12,
+        color: COR_TEXTO,
+        fontFamily: 'Helvetica-Bold',
+        marginBottom: 20
     },
     headerLogos: {
         flexDirection: 'row',
@@ -357,7 +364,8 @@ const RelatorioPDF = ({
     dataFim,
     totalRegistros,
     todasOcorrencias,
-    incluirGeral
+    incluirGeral,
+    nomeResponsavel
 }) => (
     <Document>
         {/* PÁGINA 1 - RESUMO EXECUTIVO */}
@@ -378,14 +386,15 @@ const RelatorioPDF = ({
 
                     <Text style={s.headerTitulo}>Relatório Geral</Text>
                     <Text style={s.headerSubtitulo}>SIMS- Sistema Inteligente de Monitoramento e Segurança</Text>
-                    <Text style={s.headerResumo}>Resumo de detecções de EPI</Text>
+                    {(nomeResponsavel != null && nomeResponsavel != '') && (
+                        <Text style={s.headerResumo}>Responsável: {nomeResponsavel}</Text>
+                    )}
                     <View style={s.badge}>
                         <Text style={s.badgeTexto}>
                             Emitido em: {new Date().toLocaleDateString('pt-BR')} - {new Date().toLocaleTimeString('pt-BR')}
                         </Text>
                     </View>
                 </View>
-
                 {/* Informações Gerais */}
                 <Secao titulo="Informações Gerais">
                     <Linha label="Total de alertas hoje:" valor={String(totalHoje)} />
@@ -521,7 +530,15 @@ const RelatorioPDF = ({
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
-const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', dataInicio, dataFim, incluirHistorico = false, incluirGeral = true }) => {
+const ExportarRelatorioPDF = ({
+    incluirGraficos = true,
+    tipoRelatorio = 'pdf',
+    dataInicio,
+    dataFim,
+    incluirHistorico = false,
+    incluirGeral = true,
+    nomeResponsavel = null
+}) => {
     const {
         ocorrencias,
         fetchOcorrencias,
@@ -854,6 +871,7 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
                     totalRegistros={totalRegistrosPeriodo}
                     todasOcorrencias={todasOcorrenciasPeriodo}
                     incluirGeral={incluirGeral}
+                    nomeResponsavel={nomeResponsavel}
                 />
             ).toBlob();
 
@@ -877,7 +895,7 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
         excel: 'Gerar Excel',
     }[tipoRelatorio] ?? 'Gerar Relatório';
 
-    const desabilitado = carregandoDados || gerandoPDF;
+    const desabilitado = carregandoDados || gerandoPDF || (nomeResponsavel == null || nomeResponsavel == '' || nomeResponsavel.length < 10);
 
     return (
         <button

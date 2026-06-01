@@ -14,6 +14,7 @@ export default function EmissaoRelatorios() {
     const [dataInicio, setDataInicio] = useState(null);
     const [dataFim, setDataFim] = useState(null);
     const [incluirGeral, setIncluirGeral] = useState(true);
+    const [nomeResponsavel, setNomeResponsavel] = useState(null);
 
     const hojeISO = new Date().toISOString().split("T")[0];
     const [dataInicioISO, setDataInicioISO] = useState(hojeISO);
@@ -302,6 +303,8 @@ export default function EmissaoRelatorios() {
                         <h1>Emissão de relatórios</h1>
                         <p>Aqui você pode gerar relatórios personalizados que auxiliam na tomada de decisão, no acompanhamento de conformidades e na identificação de tendências de segurança. Os relatórios disponíveis permitem desde análises executivas rápidas até detalhamentos específicos por setor, garantindo que gestores e equipes tenham acesso às informações necessárias para fortalecer a cultura de segurança e reduzir riscos operacionais.</p>
                         <hr />
+                        <p>Responsável <span style={{ color: 'red' }}>(campo obrigatório)</span></p>
+                        <input type="text" placeholder="Seu nome completo" className="inputNomeCompleto" onChange={(e) => setNomeResponsavel(e.target.value.trim())} />
                         <p>Formato</p>
                         <select name="" id="" value={tipoRelatorio} onChange={(e) => setTipoRelatorio(e.target.value)}>
                             <option value="pdf">PDF</option>
@@ -379,6 +382,7 @@ export default function EmissaoRelatorios() {
                             dataFim={dataFimISO}
                             incluirHistorico={incluirHistorico}
                             incluirGeral={incluirHistorico ? incluirGeral : true}
+                            nomeResponsavel={nomeResponsavel}
                         />
                     </div>
                     <div className="janelaHistoricoRelatorio">

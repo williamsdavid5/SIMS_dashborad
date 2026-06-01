@@ -100,7 +100,12 @@
 }
 
 .dataPeriodo input {
-    background-color: white;
+    background-color: var(--corJanela);
+}
+
+.inputNomeCompleto {
+    background-color: var(--corJanela);
+    padding: 10px;
 }
 
 /* 
