@@ -13,6 +13,7 @@ export default function EmissaoRelatorios() {
     const [historicoTipo, setHistoricoTipo] = useState('hoje');
     const [dataInicio, setDataInicio] = useState(null);
     const [dataFim, setDataFim] = useState(null);
+    const [incluirGeral, setIncluirGeral] = useState(true);
 
     const hojeISO = new Date().toISOString().split("T")[0];
     const [dataInicioISO, setDataInicioISO] = useState(hojeISO);
@@ -315,12 +316,12 @@ export default function EmissaoRelatorios() {
                         {tipoRelatorio == 'pdf' && (
                             <>
                                 <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
-                                    <label htmlFor="">
-                                        <input type="checkbox" name="" id="" checked={incluirGraficos} onChange={(e) => setIncluirGraficos(e.target.checked)} />
-                                        Incluir gráficos
-                                    </label>
-                                </span>
-                                <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
+                                    {incluirGeral && (
+                                        <label htmlFor="">
+                                            <input type="checkbox" name="" id="" checked={incluirGraficos} onChange={(e) => setIncluirGraficos(e.target.checked)} />
+                                            Incluir gráficos
+                                        </label>
+                                    )}
                                     <label htmlFor="">
                                         <input type="checkbox" name="" id="" checked={incluirHistorico} onChange={(e) => setIncluirHistorico(e.target.checked)} />
                                         Incluir histórico
@@ -330,6 +331,12 @@ export default function EmissaoRelatorios() {
                         )}
                         {((incluirHistorico) || (tipoRelatorio != 'pdf')) && (
                             <>
+                                <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
+                                    <label htmlFor="">
+                                        <input type="checkbox" name="" id="" checked={!incluirGeral} onChange={(e) => setIncluirGeral(!e.target.checked)} />
+                                        Apenas histórico (Não inclui as informações gerais no PDF)
+                                    </label>
+                                </span>
                                 <select name="" id="" value={historicoTipo} onChange={(e) => setHistoricoTipo(e.target.value)}>
                                     <option value="hoje">
                                         Histórico para hoje
@@ -371,6 +378,7 @@ export default function EmissaoRelatorios() {
                             dataInicio={dataInicioISO}
                             dataFim={dataFimISO}
                             incluirHistorico={incluirHistorico}
+                            incluirGeral={incluirHistorico ? incluirGeral : true}
                         />
                     </div>
                     <div className="janelaHistoricoRelatorio">

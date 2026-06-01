@@ -357,117 +357,120 @@ const RelatorioPDF = ({
     dataFim,
     totalRegistros,
     todasOcorrencias,
+    incluirGeral
 }) => (
     <Document>
         {/* PÁGINA 1 - RESUMO EXECUTIVO */}
-        <Page size="A4" style={s.page}>
-            {/* Header */}
-            <View style={s.header}>
-                <View style={s.headerLogos}>
-                    <View style={s.logoView}>
-                        <Image src={SIMSLogo} style={s.logo2} />
-                        <Image src={VIICLogo} style={s.logo} />
-                    </View>
-                    <View>
-                        <Text style={s.codigoTexto}>{codigoAleatorio}</Text>
-                        <Image src={codigoBarrasPng} style={s.codigoBarras} />
-                    </View>
-                </View>
-
-                <Text style={s.headerTitulo}>Relatório SIMS</Text>
-                <Text style={s.headerSubtitulo}>Sistema Inteligente de Monitoramento e Segurança</Text>
-                <Text style={s.headerResumo}>Resumo de detecções de EPI</Text>
-                <View style={s.badge}>
-                    <Text style={s.badgeTexto}>
-                        Emitido em: {new Date().toLocaleDateString('pt-BR')} - {new Date().toLocaleTimeString('pt-BR')}
-                    </Text>
-                </View>
-            </View>
-
-            {/* Informações Gerais */}
-            <Secao titulo="Informações Gerais">
-                <Linha label="Total de alertas hoje:" valor={String(totalHoje)} />
-                <Linha label="Média diária de alertas:" valor={String(mediaDiaria)} />
-                <Linha label="Taxa geral de conformidade:" valor={`${taxaConformidade}%`} />
-                <Linha label="EPI(s) mais negligenciado(s):" valor={epiMaisNegligenciadoText} />
-                <Linha label="Câmera com maior incidência:" valor={cameraMaiorIncidencia} />
-                <Linha label="Intervalo com mais ocorrências:" valor={horarioPico} />
-            </Secao>
-
-            {/* Ocorrências por Tipo */}
-            <Secao
-                titulo="Ocorrências por Tipo"
-                descricao="Números de detecções para cada EPI, esse dado permite visualizar o cenário atual, indicando quais os EPIs mais negligenciados."
-            >
-                <View style={s.duasColunas}>
-                    <View style={s.coluna}>
-                        {tiposPrimeiraColuna.map((tipo, i) => (
-                            <View key={i} style={s.linha}>
-                                <Text style={s.label}>{tipo.epi}: </Text>
-                                <Text style={s.valor}>{tipo.total}</Text>
-                            </View>
-                        ))}
-                    </View>
-                    <View style={s.coluna}>
-                        {tiposSegundaColuna.map((tipo, i) => (
-                            <View key={i} style={s.linha}>
-                                <Text style={s.label}>{tipo.epi}: </Text>
-                                <Text style={s.valor}>{tipo.total}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-                {incluirGraficos && (
-                    <>
-                        <Text style={s.graficoText}>Visualização gráfica:</Text>
-                        <Image src={graficoBarraPng} style={s.grafico} />
-                    </>
-                )}
-            </Secao>
-
-            {/* Detecções por câmera */}
-            <Secao
-                titulo="Detecções por câmera"
-                descricao="Números de detecções para cada câmera, esse dado indica as áreas com maior negligência."
-            >
-                {camerasOrdenadas.map((camera, i) => (
-                    <Linha key={i} label={`${camera.camera}:`} valor={String(camera.total)} />
-                ))}
-                {incluirGraficos && (
-                    <>
-                        <Text style={s.graficoText}>Visualização gráfica:</Text>
-                        <View style={s.header}>
-                            <Image src={graficoPiePng} style={s.graficoPie} />
+        {incluirGeral && (
+            <Page size="A4" style={s.page}>
+                {/* Header */}
+                <View style={s.header}>
+                    <View style={s.headerLogos}>
+                        <View style={s.logoView}>
+                            <Image src={SIMSLogo} style={s.logo2} />
+                            <Image src={VIICLogo} style={s.logo} />
                         </View>
-                    </>
-                )}
-            </Secao>
+                        <View>
+                            <Text style={s.codigoTexto}>{codigoAleatorio}</Text>
+                            <Image src={codigoBarrasPng} style={s.codigoBarras} />
+                        </View>
+                    </View>
 
-            {/* Detecções por intervalo */}
-            <Secao
-                titulo="Detecções por intervalo"
-                descricao="Intervalos com maior quantidade de detecções, os horários indicam o início do intervalo, durando exatamente 1 hora."
-            >
-                <Text style={s.obs}>
-                    Obs: os intervalos estão organizados por número de detecções, os intervalos que não aparecem, não possuem detecções registradas.
-                </Text>
-                {intervalosComOcorrencias.slice(0, 6).map((item, i) => (
-                    <Linha key={i} label={`${item.horario} -`} valor={`${item.quantidade} ocorrências`} />
-                ))}
-                {incluirGraficos && (
-                    <>
-                        <Text style={s.graficoText}>Visualização gráfica:</Text>
-                        <Image src={graficoPng} style={s.grafico} />
-                    </>
-                )}
-            </Secao>
+                    <Text style={s.headerTitulo}>Relatório Geral</Text>
+                    <Text style={s.headerSubtitulo}>SIMS- Sistema Inteligente de Monitoramento e Segurança</Text>
+                    <Text style={s.headerResumo}>Resumo de detecções de EPI</Text>
+                    <View style={s.badge}>
+                        <Text style={s.badgeTexto}>
+                            Emitido em: {new Date().toLocaleDateString('pt-BR')} - {new Date().toLocaleTimeString('pt-BR')}
+                        </Text>
+                    </View>
+                </View>
 
-            {/* Rodapé da página 1 */}
-            <View style={s.rodape}>
-                <Text style={s.codigoTexto}>{codigoAleatorio}</Text>
-                <Image src={codigoBarrasPng} style={s.codigoBarras} />
-            </View>
-        </Page>
+                {/* Informações Gerais */}
+                <Secao titulo="Informações Gerais">
+                    <Linha label="Total de alertas hoje:" valor={String(totalHoje)} />
+                    <Linha label="Média diária de alertas:" valor={String(mediaDiaria)} />
+                    <Linha label="Taxa geral de conformidade:" valor={`${taxaConformidade}%`} />
+                    <Linha label="EPI(s) mais negligenciado(s):" valor={epiMaisNegligenciadoText} />
+                    <Linha label="Câmera com maior incidência:" valor={cameraMaiorIncidencia} />
+                    <Linha label="Intervalo com mais ocorrências:" valor={horarioPico} />
+                </Secao>
+
+                {/* Ocorrências por Tipo */}
+                <Secao
+                    titulo="Ocorrências por Tipo"
+                    descricao="Números de detecções para cada EPI, esse dado permite visualizar o cenário atual, indicando quais os EPIs mais negligenciados."
+                >
+                    <View style={s.duasColunas}>
+                        <View style={s.coluna}>
+                            {tiposPrimeiraColuna.map((tipo, i) => (
+                                <View key={i} style={s.linha}>
+                                    <Text style={s.label}>{tipo.epi}: </Text>
+                                    <Text style={s.valor}>{tipo.total}</Text>
+                                </View>
+                            ))}
+                        </View>
+                        <View style={s.coluna}>
+                            {tiposSegundaColuna.map((tipo, i) => (
+                                <View key={i} style={s.linha}>
+                                    <Text style={s.label}>{tipo.epi}: </Text>
+                                    <Text style={s.valor}>{tipo.total}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                    {incluirGraficos && (
+                        <>
+                            <Text style={s.graficoText}>Visualização gráfica:</Text>
+                            <Image src={graficoBarraPng} style={s.grafico} />
+                        </>
+                    )}
+                </Secao>
+
+                {/* Detecções por câmera */}
+                <Secao
+                    titulo="Detecções por câmera"
+                    descricao="Números de detecções para cada câmera, esse dado indica as áreas com maior negligência."
+                >
+                    {camerasOrdenadas.map((camera, i) => (
+                        <Linha key={i} label={`${camera.camera}:`} valor={String(camera.total)} />
+                    ))}
+                    {incluirGraficos && (
+                        <>
+                            <Text style={s.graficoText}>Visualização gráfica:</Text>
+                            <View style={s.header}>
+                                <Image src={graficoPiePng} style={s.graficoPie} />
+                            </View>
+                        </>
+                    )}
+                </Secao>
+
+                {/* Detecções por intervalo */}
+                <Secao
+                    titulo="Detecções por intervalo"
+                    descricao="Intervalos com maior quantidade de detecções, os horários indicam o início do intervalo, durando exatamente 1 hora."
+                >
+                    <Text style={s.obs}>
+                        Obs: os intervalos estão organizados por número de detecções, os intervalos que não aparecem, não possuem detecções registradas.
+                    </Text>
+                    {intervalosComOcorrencias.slice(0, 6).map((item, i) => (
+                        <Linha key={i} label={`${item.horario} -`} valor={`${item.quantidade} ocorrências`} />
+                    ))}
+                    {incluirGraficos && (
+                        <>
+                            <Text style={s.graficoText}>Visualização gráfica:</Text>
+                            <Image src={graficoPng} style={s.grafico} />
+                        </>
+                    )}
+                </Secao>
+
+                {/* Rodapé da página 1 */}
+                <View style={s.rodape}>
+                    <Text style={s.codigoTexto}>{codigoAleatorio}</Text>
+                    <Image src={codigoBarrasPng} style={s.codigoBarras} />
+                </View>
+            </Page>
+        )}
 
         {/* PÁGINA 2 - HISTÓRICO COMPLETO (apenas se incluirHistorico e tiver registros) */}
         {incluirHistorico && totalRegistros > 0 && (
@@ -486,10 +489,10 @@ const RelatorioPDF = ({
                     </View>
 
                     <Text style={s.headerTitulo}>Histórico de Ocorrências</Text>
-                    <Text style={s.headerSubtitulo}>Sistema Inteligente de Monitoramento e Segurança</Text>
+                    <Text style={s.headerSubtitulo}>SIMS- Sistema Inteligente de Monitoramento e Segurança</Text>
                     <View style={s.badge}>
                         <Text style={s.badgeTexto}>
-                            Período: {formatarDataParaExibicao(dataInicio) || 'N/I'} a {formatarDataParaExibicao(dataFim) || 'N/I'} | Total: {totalRegistros} registro(s)
+                            Emitido em: {new Date().toLocaleDateString('pt-BR')} - {new Date().toLocaleTimeString('pt-BR')}
                         </Text>
                     </View>
                 </View>
@@ -500,6 +503,7 @@ const RelatorioPDF = ({
                     titulo="Lista completa de ocorrências"
                     descricao="Todas as infrações registradas no período selecionado"
                 ></Secao>
+                <Text style={s.headerResumo}>Histórico para o período de {formatarDataParaExibicao(dataInicio) || 'N/I'} a {formatarDataParaExibicao(dataFim) || 'N/I'} | Total: {totalRegistros} registro(s)</Text>
                 <TabelaOcorrencias
                     ocorrencias={todasOcorrencias}
                     formatarDataHora={formatarDataHora}
@@ -517,7 +521,7 @@ const RelatorioPDF = ({
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
-const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', dataInicio, dataFim, incluirHistorico = false }) => {
+const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', dataInicio, dataFim, incluirHistorico = false, incluirGeral = true }) => {
     const {
         ocorrencias,
         fetchOcorrencias,
@@ -849,6 +853,7 @@ const ExportarRelatorioPDF = ({ incluirGraficos = true, tipoRelatorio = 'pdf', d
                     dataFim={dataFimFinal}
                     totalRegistros={totalRegistrosPeriodo}
                     todasOcorrencias={todasOcorrenciasPeriodo}
+                    incluirGeral={incluirGeral}
                 />
             ).toBlob();
 
