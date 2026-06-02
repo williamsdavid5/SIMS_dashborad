@@ -301,7 +301,8 @@ export default function EmissaoRelatorios() {
                 <section className="principalDash principalRelatorios">
                     <div className="janelaRelatório">
                         <h1>Emissão de relatórios</h1>
-                        <p>Aqui você pode gerar relatórios personalizados que auxiliam na tomada de decisão, no acompanhamento de conformidades e na identificação de tendências de segurança. Os relatórios disponíveis permitem desde análises executivas rápidas até detalhamentos específicos por setor, garantindo que gestores e equipes tenham acesso às informações necessárias para fortalecer a cultura de segurança e reduzir riscos operacionais.</p>
+                        <p>Aqui você pode gerar relatórios personalizados que auxiliam na tomada de decisão,
+                            no acompanhamento de conformidades e na identificação de tendências de segurança.</p>
                         <hr />
                         <p>Responsável <span style={{ color: 'red' }}>(campo obrigatório)</span></p>
                         <input type="text" placeholder="Seu nome completo" className="inputNomeCompleto" onChange={(e) => setNomeResponsavel(e.target.value.trim())} />
@@ -312,62 +313,59 @@ export default function EmissaoRelatorios() {
                             <option value="csv">CSV</option>
                         </select>
                         {tipoRelatorio != 'pdf' && (
-                            <>
-                                <p><b>Atenção:</b> relatórios do tipo <b>{tipoRelatorio}</b> retornam apenas o histórico.</p>
-                            </>
+                            <p>
+                                <b>Atenção:</b> relatórios do tipo <b>{tipoRelatorio}</b> retornam apenas o histórico.
+                            </p>
                         )}
                         {tipoRelatorio == 'pdf' && (
                             <>
                                 <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
-                                    {incluirGeral && (
-                                        <label htmlFor="">
-                                            <input type="checkbox" name="" id="" checked={incluirGraficos} onChange={(e) => setIncluirGraficos(e.target.checked)} />
-                                            Incluir gráficos
-                                        </label>
-                                    )}
-                                    <label htmlFor="">
-                                        <input type="checkbox" name="" id="" checked={incluirHistorico} onChange={(e) => setIncluirHistorico(e.target.checked)} />
+                                    <label>
+                                        <input type="checkbox" checked={incluirGraficos} onChange={(e) => setIncluirGraficos(e.target.checked)} />
+                                        Incluir gráficos
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" checked={incluirHistorico} onChange={(e) => setIncluirHistorico(e.target.checked)} />
                                         Incluir histórico
                                     </label>
                                 </span>
+
+                                {incluirHistorico && (
+                                    <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
+                                        <label>
+                                            <input type="checkbox" checked={!incluirGeral} onChange={(e) => setIncluirGeral(!e.target.checked)} />
+                                            Apenas histórico (Não inclui as informações gerais no PDF)
+                                        </label>
+                                    </span>
+                                )}
                             </>
                         )}
-                        {((incluirHistorico) || (tipoRelatorio != 'pdf')) && (
+
+                        {(incluirHistorico || tipoRelatorio != 'pdf') && (
                             <>
-                                <span className="auxiliarFiltroHistorico auxiliarPeriodoRelatorio">
-                                    <label htmlFor="">
-                                        <input type="checkbox" name="" id="" checked={!incluirGeral} onChange={(e) => setIncluirGeral(!e.target.checked)} />
-                                        Apenas histórico (Não inclui as informações gerais no PDF)
-                                    </label>
-                                </span>
-                                <select name="" id="" value={historicoTipo} onChange={(e) => setHistoricoTipo(e.target.value)}>
-                                    <option value="hoje">
-                                        Histórico para hoje
-                                    </option>
-                                    <option value="periodo">
-                                        Histórico por período
-                                    </option>
+                                <select value={historicoTipo} onChange={(e) => setHistoricoTipo(e.target.value)}>
+                                    <option value="hoje">Histórico para hoje</option>
+                                    <option value="periodo">Histórico por período</option>
                                 </select>
+
                                 {historicoTipo == 'periodo' && (
-                                    <>
-                                        <span className="dataPeriodo">
-                                            <input
-                                                type="text"
-                                                placeholder="DD/MM/AAAA"
-                                                value={dataFiltroInicio}
-                                                onChange={(e) => handleChange(e, setDataFiltroInicio, setDataInicioISO)}
-                                                maxLength={10}
-                                            />
-                                            <p>a</p>
-                                            <input
-                                                type="text"
-                                                placeholder="DD/MM/AAAA"
-                                                value={dataFiltroFim}
-                                                onChange={(e) => handleChange(e, setDataFiltroFim, setDataFimISO)}
-                                                maxLength={10}
-                                            />
-                                        </span>
-                                    </>
+                                    <span className="dataPeriodo">
+                                        <input
+                                            type="text"
+                                            placeholder="DD/MM/AAAA"
+                                            value={dataFiltroInicio}
+                                            onChange={(e) => handleChange(e, setDataFiltroInicio, setDataInicioISO)}
+                                            maxLength={10}
+                                        />
+                                        <p>a</p>
+                                        <input
+                                            type="text"
+                                            placeholder="DD/MM/AAAA"
+                                            value={dataFiltroFim}
+                                            onChange={(e) => handleChange(e, setDataFiltroFim, setDataFimISO)}
+                                            maxLength={10}
+                                        />
+                                    </span>
                                 )}
                             </>
                         )}
@@ -381,11 +379,30 @@ export default function EmissaoRelatorios() {
                             dataInicio={dataInicioISO}
                             dataFim={dataFimISO}
                             incluirHistorico={incluirHistorico}
-                            incluirGeral={incluirHistorico ? incluirGeral : true}
+                            incluirGeral={tipoRelatorio == 'pdf' ? (incluirHistorico ? incluirGeral : true) : true}
                             nomeResponsavel={nomeResponsavel}
                         />
+                        <hr />
+                        <h1>Sobre os relatórios</h1>
+                        <p>Os relatórios disponíveis permitem desde análises executivas rápidas até análises completas do histórico,
+                            garantindo que gestores e equipes tenham acesso às informações necessárias para fortalecer a cultura de segurança
+                            e reduzir riscos operacionais. <br /> <br />
+                            As opções disponíveis são: <br />
+                            <ul>
+                                <li>
+                                    <b>PDF:</b> Reúne informações gerais sobre os dados coletados sobre o sistema, é possível incluir ou não os gráficos dessas mesmas informações. Você também tem a opção de incluir o histórico completo de detecções, seja do dia atual, ou de um período de datas da sua preferência.
+                                </li>
+                                <li>
+                                    <b>Excel:</b> Histórico de detecções organizados em uma planilha, permite uma análise manual dos dados.
+                                </li>
+                                <li>
+                                    <b>csv (avançado):</b> Arquivo ideal para análise de dados utilizando algoritmos.
+                                </li>
+                            </ul>
+
+                        </p>
                     </div>
-                    <div className="janelaHistoricoRelatorio">
+                    {/* <div className="janelaHistoricoRelatorio">
                         <h2>Última emissões</h2>
                         <div className="divAuxiliarTabela">
                             <table border={1} className='tabelaHistoricoRelatorio '>
@@ -419,7 +436,7 @@ export default function EmissaoRelatorios() {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> */}
                 </section>
             </main>
         </>
