@@ -384,23 +384,27 @@ export default function EmissaoRelatorios() {
                         />
                         <hr />
                         <h1>Sobre os relatórios</h1>
-                        <p>Os relatórios disponíveis permitem desde análises executivas rápidas até análises completas do histórico,
+                        <p>
+                            Os relatórios disponíveis oferecem desde análises executivas rápidas até avaliações completas do histórico,
                             garantindo que gestores e equipes tenham acesso às informações necessárias para fortalecer a cultura de segurança
-                            e reduzir riscos operacionais. <br /> <br />
-                            As opções disponíveis são: <br />
-                            <ul>
-                                <li>
-                                    <b>PDF:</b> Reúne informações gerais sobre os dados coletados sobre o sistema, é possível incluir ou não os gráficos dessas mesmas informações. Você também tem a opção de incluir o histórico completo de detecções, seja do dia atual, ou de um período de datas da sua preferência.
-                                </li>
-                                <li>
-                                    <b>Excel:</b> Histórico de detecções organizados em uma planilha, permite uma análise manual dos dados.
-                                </li>
-                                <li>
-                                    <b>csv (avançado):</b> Arquivo ideal para análise de dados utilizando algoritmos.
-                                </li>
-                            </ul>
-
+                            e reduzir riscos operacionais.
                         </p>
+                        <p>
+                            As opções disponíveis são:
+                        </p>
+                        <ul>
+                            <li>
+                                <b>PDF:</b> Reúne informações gerais sobre os dados coletados do sistema. É possível incluir ou não os gráficos
+                                correspondentes e também adicionar o histórico completo de detecções, seja do dia atual ou de um período de datas
+                                definido pelo usuário.
+                            </li>
+                            <li>
+                                <b>Excel:</b> Apresenta o histórico de detecções organizado em planilha, permitindo uma análise manual detalhada dos dados.
+                            </li>
+                            <li>
+                                <b>CSV (avançado):</b> Arquivo ideal para análises de dados utilizando algoritmos e ferramentas especializadas.
+                            </li>
+                        </ul>
                     </div>
                     {/* <div className="janelaHistoricoRelatorio">
                         <h2>Última emissões</h2>
