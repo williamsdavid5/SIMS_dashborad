@@ -36,7 +36,7 @@ export default function Login() {
                         onChange={(e) => setUsuario(e.target.value)}
                     />
                     <p>Senha</p>
-                    <input type="password" name="" id=""
+                    <input type="number" name="" id="" min={5}
                         onChange={(e) => setSenha(e.target.value)}
                     />
                     <button className='botaoLogin'

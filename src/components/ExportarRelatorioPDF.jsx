@@ -635,6 +635,51 @@ const ExportarRelatorioPDF = ({
     };
 
     // ── Gerador CSV ───────────────────────────────────────────────────────────
+    // const gerarCSV = (dadosOcorrencias) => {
+    //     const cabecalho = ['Data/Hora', 'Câmera', 'EPI', 'Tipo', 'Status'];
+    //     const linhas = dadosOcorrencias.map(occ => [
+    //         formatarDataHora(occ.data_hora),
+    //         occ.camera,
+    //         occ.epi,
+    //         occ.tipo,
+    //         occ.status,
+    //     ]);
+
+    //     const conteudo = [cabecalho, ...linhas]
+    //         .map(linha => linha.map(cel => `"${String(cel ?? '').replace(/"/g, '""')}"`).join(','))
+    //         .join('\n');
+
+    //     const blob = new Blob(['\uFEFF' + conteudo], { type: 'text/csv;charset=utf-8;' });
+    //     const url = URL.createObjectURL(blob);
+    //     const link = document.createElement('a');
+    //     link.href = url;
+    //     link.download = `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.csv`;
+    //     link.click();
+    //     URL.revokeObjectURL(url);
+    // };
+
+    // ── Gerador Excel ─────────────────────────────────────────────────────────
+    // const gerarExcel = (dadosOcorrencias) => {
+    //     const dados = dadosOcorrencias.map(occ => ({
+    //         'Data/Hora': formatarDataHora(occ.data_hora),
+    //         'Câmera': occ.camera,
+    //         'EPI': occ.epi,
+    //         'Tipo': occ.tipo,
+    //         'Status': occ.status,
+    //     }));
+
+    //     const worksheet = XLSX.utils.json_to_sheet(dados);
+    //     const workbook = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(workbook, worksheet, 'Ocorrências');
+    //     XLSX.writeFile(workbook, `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    // };
+
+    // ── Auxiliar para detectar se está dentro do App React Native ──
+    const estaNoApp = () => {
+        return window.ReactNativeWebView !== undefined;
+    };
+
+    // ── Gerador CSV Atualizado ───────────────────────────────────────────────────────────
     const gerarCSV = (dadosOcorrencias) => {
         const cabecalho = ['Data/Hora', 'Câmera', 'EPI', 'Tipo', 'Status'];
         const linhas = dadosOcorrencias.map(occ => [
@@ -649,16 +694,29 @@ const ExportarRelatorioPDF = ({
             .map(linha => linha.map(cel => `"${String(cel ?? '').replace(/"/g, '""')}"`).join(','))
             .join('\n');
 
-        const blob = new Blob(['\uFEFF' + conteudo], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.csv`;
-        link.click();
-        URL.revokeObjectURL(url);
+        const nomeArquivo = `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.csv`;
+
+        if (estaNoApp()) {
+            // Envia para o React Native como texto simples (com o prefixo para sabermos o tipo)
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+                tipo: 'download',
+                extensao: 'csv',
+                nome: nomeArquivo,
+                payload: btoa(unescape(encodeURIComponent(conteudo))) // Converte string para Base64 seguro
+            }));
+        } else {
+            // Comportamento normal no navegador do computador
+            const blob = new Blob(['\uFEFF' + conteudo], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = nomeArquivo;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     };
 
-    // ── Gerador Excel ─────────────────────────────────────────────────────────
+    // ── Gerador Excel Atualizado ─────────────────────────────────────────────────────────
     const gerarExcel = (dadosOcorrencias) => {
         const dados = dadosOcorrencias.map(occ => ({
             'Data/Hora': formatarDataHora(occ.data_hora),
@@ -671,7 +729,20 @@ const ExportarRelatorioPDF = ({
         const worksheet = XLSX.utils.json_to_sheet(dados);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Ocorrências');
-        XLSX.writeFile(workbook, `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        const nomeArquivo = `ocorrencias_sims_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+        if (estaNoApp()) {
+            // Gera o Excel em formato de string binária base64
+            const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+                tipo: 'download',
+                extensao: 'xlsx',
+                nome: nomeArquivo,
+                payload: wbout
+            }));
+        } else {
+            XLSX.writeFile(workbook, nomeArquivo);
+        }
     };
 
     // ── Orquestrador ──────────────────────────────────────────────────────────
@@ -887,13 +958,30 @@ const ExportarRelatorioPDF = ({
                     nomeResponsavel={nomeResponsavel}
                 />
             ).toBlob();
+            const nomeArquivoPdf = `relatorio_sims_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`;
 
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `relatorio_sims_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`;
-            link.click();
-            URL.revokeObjectURL(url);
+            if (estaNoApp()) {
+                // Converte o Blob do PDF em Base64 para enviar ao app
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64data = reader.result.split(',')[1]; // Pega apenas a string base64
+                    window.ReactNativeWebView.postMessage(JSON.stringify({
+                        tipo: 'download',
+                        extensao: 'pdf',
+                        nome: nomeArquivoPdf,
+                        payload: base64data
+                    }));
+                };
+                reader.readAsDataURL(blob);
+            } else {
+                // Comportamento original no PC
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = nomeArquivoPdf;
+                link.click();
+                URL.revokeObjectURL(url);
+            }
 
         } catch (error) {
             console.error('Erro ao gerar PDF:', error);
