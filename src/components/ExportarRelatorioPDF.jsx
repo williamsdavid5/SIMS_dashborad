@@ -505,6 +505,9 @@ const RelatorioPDF = ({
 
                     <Text style={s.headerTitulo}>Histórico de Ocorrências</Text>
                     <Text style={s.headerSubtitulo}>SIMS- Sistema Inteligente de Monitoramento e Segurança</Text>
+                    {(nomeResponsavel != null && nomeResponsavel != '') && (
+                        <Text style={s.headerResumo}>Responsável: {nomeResponsavel}</Text>
+                    )}
                     <View style={s.badge}>
                         <Text style={s.badgeTexto}>
                             Emitido em: {new Date().toLocaleDateString('pt-BR')} - {new Date().toLocaleTimeString('pt-BR')}
