@@ -1,5 +1,5 @@
 import MenuLateral from "./MenuLateral"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './styles/relatorios.css'
 import ExportarRelatorioPDF from "../components/ExportarRelatorioPDF";
 
@@ -19,6 +19,13 @@ export default function EmissaoRelatorios() {
     const hojeISO = new Date().toISOString().split("T")[0];
     const [dataInicioISO, setDataInicioISO] = useState(hojeISO);
     const [dataFimISO, setDataFimISO] = useState(hojeISO);
+
+    useEffect(() => {
+        const nomeSalvo = localStorage.getItem('nomeResponsavel');
+        if (nomeSalvo) {
+            setNomeResponsavel(nomeSalvo);
+        }
+    }, [])
 
     function handleChange(e, setDataVisual, setDataISO) {
         let input = e.target.value.replace(/\D/g, "");
@@ -305,7 +312,13 @@ export default function EmissaoRelatorios() {
                             no acompanhamento de conformidades e na identificação de tendências de segurança.</p>
                         <hr />
                         <p>Responsável <span style={{ color: 'red' }}>(campo obrigatório)</span></p>
-                        <input type="text" placeholder="Seu nome completo" className="inputNomeCompleto" onChange={(e) => setNomeResponsavel(e.target.value.trim())} />
+                        <input
+                            type="text"
+                            placeholder="Seu nome completo"
+                            className="inputNomeCompleto"
+                            defaultValue={nomeResponsavel}
+                            onChange={(e) => setNomeResponsavel(e.target.value.trim())}
+                        />
                         <p>Formato</p>
                         <select name="" id="" value={tipoRelatorio} onChange={(e) => setTipoRelatorio(e.target.value)}>
                             <option value="pdf">PDF</option>

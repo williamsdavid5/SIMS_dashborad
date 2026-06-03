@@ -397,12 +397,18 @@ const RelatorioPDF = ({
                 </View>
                 {/* Informações Gerais */}
                 <Secao titulo="Informações Gerais">
-                    <Linha label="Total de alertas hoje:" valor={String(totalHoje)} />
-                    <Linha label="Média diária de alertas:" valor={String(mediaDiaria)} />
-                    <Linha label="Taxa geral de conformidade:" valor={`${taxaConformidade}%`} />
-                    <Linha label="EPI(s) mais negligenciado(s):" valor={epiMaisNegligenciadoText} />
-                    <Linha label="Câmera com maior incidência:" valor={cameraMaiorIncidencia} />
-                    <Linha label="Intervalo com mais ocorrências:" valor={horarioPico} />
+                    <View style={s.duasColunas}>
+                        <View>
+                            <Linha label="EPI(s) mais negligenciado(s):" valor={epiMaisNegligenciadoText} />
+                            <Linha label="Câmera com maior incidência:" valor={cameraMaiorIncidencia} />
+                            <Linha label="Intervalo com mais ocorrências:" valor={horarioPico} />
+                        </View>
+                        <View style={s.coluna}>
+                            <Linha label="Total de alertas hoje:" valor={String(totalHoje)} />
+                            <Linha label="Média diária de alertas:" valor={String(mediaDiaria)} />
+                            <Linha label="Taxa geral de conformidade:" valor={`${taxaConformidade}%`} />
+                        </View>
+                    </View>
                 </Secao>
 
                 {/* Ocorrências por Tipo */}
@@ -669,6 +675,10 @@ const ExportarRelatorioPDF = ({
     const gerarRelatorio = async () => {
         if (gerandoPDF) return;
         setGerandoPDF(true);
+
+        if (nomeResponsavel != null && nomeResponsavel != '') {
+            localStorage.setItem('nomeResponsavel', nomeResponsavel);
+        }
 
         try {
             let dataInicioFinal = dataInicio;
