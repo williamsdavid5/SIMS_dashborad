@@ -15,7 +15,7 @@ export default function Login() {
     const [senha, setSenha] = useState('');
 
     function login() {
-        if ((usuario == 'user' || usuario == 'User') && senha == '12345') {
+        if ((usuario.trim() == 'user' || usuario.trim() == 'User') && senha == '12345') {
             navigate('/dashboard');
         } else {
             alert('dados incorretos!!!!!');
